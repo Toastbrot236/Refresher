@@ -11,12 +11,17 @@ public static class AutoDiscoverClient
 {
     public static async Task<AutoDiscoverResponse?> InvokeAutoDiscoverAsync(string url, IPlatformInterface platform, CancellationToken cancellationToken = default)
     {
+        if (string.IsNullOrWhiteSpace(url))
+        {
+            platform.ErrorPrompt("Cannot use AutoDiscover because the Server URL is empty. Please enter a URL.");
+            return null;
+        }
         url = TryCompleteUrl(url);
         
         State.Logger.LogInfo(LogType.AutoDiscover, $"Invoking autodiscover on URL '{url}'");
         if (!Uri.TryCreate(url, UriKind.Absolute, out Uri? autodiscoverUri))
         {
-            platform.ErrorPrompt("Server URL could not be parsed correctly. AutoDiscover cannot continue.");
+            platform.ErrorPrompt("Cannot use AutoDiscover because the Server URL is invalid. Please ensure that you've entered an actual URL.");
             return null;
         }
         
@@ -55,7 +60,7 @@ public static class AutoDiscoverClient
             
             if(autodiscover.Version != AutoDiscoverResponse.SupportedVersion)
                 platform.WarnPrompt(
-                    $"The server gave a response with version v{autodiscover.Version}, but we expected v{AutoDiscoverResponse.SupportedVersion}. " +
+                    $"The server gave an AutoDiscover response with version v{autodiscover.Version}, but we expected v{AutoDiscoverResponse.SupportedVersion}. " +
                     $"We will accept this response, but if things go wrong, try updating Refresher.");
             
             string text = $"Successfully found a '{autodiscover.ServerBrand}' server at the given URL!\r\n" +
@@ -101,7 +106,7 @@ public static class AutoDiscoverClient
                 return true;
             }
             
-            platform.ErrorPrompt($"AutoDiscover failed, because the server responded with {(int)httpException.StatusCode} {httpException.StatusCode}.");
+            platform.ErrorPrompt($"AutoDiscover failed, because the server responded with HTTP error {(int)httpException.StatusCode} {httpException.StatusCode}.");
             return true;
         }
         
