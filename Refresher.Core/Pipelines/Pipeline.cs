@@ -13,7 +13,6 @@ namespace Refresher.Core.Pipelines;
 
 public abstract class Pipeline : IAccessesPlatform
 {
-    public abstract string Id { get; }
     public abstract string Name { get; }
     
     public readonly Dictionary<string, string> Inputs = [];

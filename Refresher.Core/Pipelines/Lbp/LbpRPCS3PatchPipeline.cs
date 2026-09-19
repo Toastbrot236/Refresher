@@ -7,7 +7,6 @@ namespace Refresher.Core.Pipelines.Lbp;
 
 public class LbpRPCS3PatchPipeline : Pipeline
 {
-    public override string Id => "lbp-rpcs3-patch";
     public override string Name => "LBP RPCS3 Patch";
 
     protected override Type SetupAccessorStepType => typeof(SetupEmulatorAccessorStep);
