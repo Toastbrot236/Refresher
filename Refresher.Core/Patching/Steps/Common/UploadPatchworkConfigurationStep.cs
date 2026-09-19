@@ -15,6 +15,7 @@ public class UploadPatchworkConfigurationStep : Step
         CommonStepInputs.LobbyPassword,
     ];
 
+    public override string Name { get; } = "Uploading Patchwork config files";
     public override float Progress { get; protected set; }
     public override async Task ExecuteAsync(CancellationToken ct = default)
     {

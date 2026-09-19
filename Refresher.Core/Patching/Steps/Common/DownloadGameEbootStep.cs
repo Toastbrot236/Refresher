@@ -8,6 +8,7 @@ public class DownloadGameEbootStep : Step
     public DownloadGameEbootStep(Pipeline pipeline) : base(pipeline)
     {}
 
+    public override string Name { get; } = "Downloading your EBOOT";
     public override float Progress { get; protected set; }
     public override Task ExecuteAsync(CancellationToken cancellationToken = default)
     {

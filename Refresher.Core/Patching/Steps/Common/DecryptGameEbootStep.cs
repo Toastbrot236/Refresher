@@ -8,6 +8,7 @@ public class DecryptGameEbootStep : Step
     public DecryptGameEbootStep(Pipeline pipeline) : base(pipeline)
     {}
 
+    public override string Name { get; } = "Decrypting your EBOOT";
     public override float Progress { get; protected set; }
     public override Task ExecuteAsync(CancellationToken cancellationToken = default)
     {

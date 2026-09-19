@@ -9,6 +9,7 @@ public class UploadGameEbootStep : Step
     {
     }
 
+    public override string Name { get; } = "Uploading patched EBOOT";
     public override float Progress { get; protected set; }
     public override Task ExecuteAsync(CancellationToken cancellationToken = default)
     {

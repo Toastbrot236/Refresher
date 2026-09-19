@@ -8,6 +8,7 @@ public class EncryptGameEbootStep : Step
     public EncryptGameEbootStep(Pipeline pipeline) : base(pipeline)
     {}
 
+    public override string Name { get; } = "Encrypting your patched EBOOT";
     public override float Progress { get; protected set; }
     public override Task ExecuteAsync(CancellationToken cancellationToken = default)
     {

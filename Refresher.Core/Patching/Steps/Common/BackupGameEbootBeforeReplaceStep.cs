@@ -8,6 +8,7 @@ public class BackupGameEbootBeforeReplaceStep : Step
     public BackupGameEbootBeforeReplaceStep(Pipeline pipeline) : base(pipeline)
     {}
 
+    public override string Name { get; } = "Backing up your current EBOOT";
     public override float Progress { get; protected set; }
     public override Task ExecuteAsync(CancellationToken cancellationToken = default)
     {

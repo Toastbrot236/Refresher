@@ -8,6 +8,7 @@ public class ValidateGameStep : Step
     public ValidateGameStep(Pipeline pipeline) : base(pipeline)
     {}
 
+    public override string Name { get; } = "Validating your entered game data";
     public override float Progress { get; protected set; }
 
     public override List<StepInput> Inputs { get; } =

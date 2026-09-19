@@ -11,6 +11,7 @@ public abstract class Step : IAccessesPlatform
     public abstract float Progress { get; protected set; }
 
     public virtual List<StepInput> Inputs { get; } = [];
+    public abstract string Name { get; }
 
     protected GameInformation Game => this.Pipeline.GameInformation!;
     protected EncryptionDetails Encryption => this.Pipeline.EncryptionDetails!;

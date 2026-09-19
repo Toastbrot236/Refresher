@@ -8,6 +8,7 @@ public class ReadEbootContentIdStep : Step
     public ReadEbootContentIdStep(Pipeline pipeline) : base(pipeline)
     {}
 
+    public override string Name { get; } = "Seeking the content ID from your EBOOT";
     public override float Progress { get; protected set; }
     public override Task ExecuteAsync(CancellationToken cancellationToken = default)
     {

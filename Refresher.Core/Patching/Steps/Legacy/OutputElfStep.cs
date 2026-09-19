@@ -13,6 +13,7 @@ public class OutputElfStep : Step
         CommonStepInputs.ElfOutput,
     ];
 
+    public override string Name { get; } = "Deploying patched EBOOT.ELF";
     public override float Progress { get; protected set; }
     public override Task ExecuteAsync(CancellationToken cancellationToken = default)
     {

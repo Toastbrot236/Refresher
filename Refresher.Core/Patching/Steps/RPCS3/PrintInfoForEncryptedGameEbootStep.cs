@@ -8,6 +8,7 @@ public class PrintInfoForEncryptedGameEbootStep : Step
     public PrintInfoForEncryptedGameEbootStep(Pipeline pipeline) : base(pipeline)
     {}
 
+    public override string Name { get; } = "Printing info on encrypted EBOOT";
     public override float Progress { get; protected set; }
     public override Task ExecuteAsync(CancellationToken cancellationToken = default)
     {

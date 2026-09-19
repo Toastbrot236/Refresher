@@ -9,6 +9,7 @@ public class DownloadGameListStep : Step
     public DownloadGameListStep(Pipeline pipeline) : base(pipeline)
     {}
 
+    public override string Name { get; } = "Downloading info about your games";
     public override float Progress { get; protected set; }
     public override async Task ExecuteAsync(CancellationToken cancellationToken = default)
     {

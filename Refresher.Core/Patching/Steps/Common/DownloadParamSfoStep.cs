@@ -10,6 +10,7 @@ public class DownloadParamSfoStep : Step
     public DownloadParamSfoStep(Pipeline pipeline) : base(pipeline)
     {}
 
+    public override string Name { get; } = "Downloading info about a game";
     public override float Progress { get; protected set; }
     public override Task ExecuteAsync(CancellationToken cancellationToken = default)
     {

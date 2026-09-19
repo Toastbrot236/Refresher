@@ -9,6 +9,7 @@ public class DownloadIconStep : Step
     public DownloadIconStep(Pipeline pipeline) : base(pipeline)
     {}
 
+    public override string Name { get; } = "Downloading the icons of a game";
     public override float Progress { get; protected set; }
     public override Task ExecuteAsync(CancellationToken cancellationToken = default)
     {

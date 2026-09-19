@@ -9,6 +9,7 @@ public class ExampleInputStep : Step
     {
     }
 
+    public override string Name { get; } = "Example input";
     public override float Progress { get; protected set; }
 
     public override List<StepInput> Inputs { get; } =

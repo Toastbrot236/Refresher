@@ -15,6 +15,7 @@ public class FakeEncryptGameEbootStep : Step
     public FakeEncryptGameEbootStep(Pipeline pipeline) : base(pipeline)
     {}
     
+    public override string Name { get; } = "Fake-encrypting your EBOOT";
     private static ushort Swap16(ushort val) => (ushort)(((val & 0xFF00) >> 8) | ((val & 0x00FF) << 8));
     private static uint Swap32(uint val) =>
         ((val & 0xFF000000) >> 24) |

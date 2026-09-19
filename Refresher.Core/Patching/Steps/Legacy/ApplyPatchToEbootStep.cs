@@ -12,6 +12,7 @@ public class ApplyPatchToEbootStep : Step
         CommonStepInputs.ServerUrl,
     ];
 
+    public override string Name { get; } = "Writing server data into your EBOOT";
     public override float Progress { get; protected set; }
     public override Task ExecuteAsync(CancellationToken cancellationToken = default)
     {

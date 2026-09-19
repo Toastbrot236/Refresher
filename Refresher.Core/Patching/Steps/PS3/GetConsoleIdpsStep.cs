@@ -9,6 +9,7 @@ public class GetConsoleIdpsStep : Step
     public GetConsoleIdpsStep(Pipeline pipeline) : base(pipeline)
     {}
 
+    public override string Name { get; } = "Downloading IDPS data from your console";
     public override float Progress { get; protected set; }
     public override Task ExecuteAsync(CancellationToken cancellationToken = default)
     {

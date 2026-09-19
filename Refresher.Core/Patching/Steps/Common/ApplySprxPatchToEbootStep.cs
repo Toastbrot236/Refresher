@@ -8,6 +8,7 @@ public class ApplySprxPatchToEbootStep : Step
     public ApplySprxPatchToEbootStep(Pipeline pipeline) : base(pipeline)
     {}
 
+    public override string Name { get; } = "Hooking Patchwork to your EBOOT";
     public override float Progress { get; protected set; }
     public override async Task ExecuteAsync(CancellationToken cancellationToken = default)
     {

@@ -8,6 +8,7 @@ public class DownloadGameLicenseStep : Step
     public DownloadGameLicenseStep(Pipeline pipeline) : base(pipeline)
     {}
 
+    public override string Name { get; } = "Downloading your game license for decryption";
     public override float Progress { get; protected set; }
     public override Task ExecuteAsync(CancellationToken cancellationToken = default)
     {

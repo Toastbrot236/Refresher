@@ -9,6 +9,7 @@ public class DelayOneSecondStep : Step
     {
     }
 
+    public override string Name { get; } = "Delaying one second";
     public override float Progress { get; protected set; }
 
     public override async Task ExecuteAsync(CancellationToken cancellationToken = default)

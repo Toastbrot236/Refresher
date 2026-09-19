@@ -9,6 +9,7 @@ public class PrepareSceToolStep : Step
     {
     }
 
+    public override string Name { get; } = "Preparing decryption tools (SCETool)";
     public override float Progress { get; protected set; }
     public override Task ExecuteAsync(CancellationToken cancellationToken = default)
     {

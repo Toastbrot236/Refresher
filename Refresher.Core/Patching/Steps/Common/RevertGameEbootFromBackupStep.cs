@@ -7,7 +7,8 @@ public class RevertGameEbootFromBackupStep : Step
 {
     public RevertGameEbootFromBackupStep(Pipeline pipeline) : base(pipeline)
     {}
-
+    
+    public override string Name { get; } = "Reverting EBOOT from backup";
     public override float Progress { get; protected set; }
     public override Task ExecuteAsync(CancellationToken cancellationToken = default)
     {

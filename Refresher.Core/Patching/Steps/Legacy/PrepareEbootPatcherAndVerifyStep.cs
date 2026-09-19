@@ -14,6 +14,7 @@ public class PrepareEbootPatcherAndVerifyStep : Step
         CommonStepInputs.ServerUrl,
     ];
 
+    public override string Name { get; } = "Preparing PS3 EBOOT patcher";
     public override float Progress { get; protected set; }
     public override Task ExecuteAsync(CancellationToken cancellationToken = default)
     {

@@ -10,6 +10,7 @@ public class UploadPatchworkSprxStep : Step
     public UploadPatchworkSprxStep(Pipeline pipeline) : base(pipeline)
     {}
 
+    public override string Name { get; } = "Uploading Patchwork module";
     public override float Progress { get; protected set; }
     public override async Task ExecuteAsync(CancellationToken cancellationToken = default)
     {

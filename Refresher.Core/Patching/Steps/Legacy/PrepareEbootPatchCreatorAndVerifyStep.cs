@@ -15,6 +15,7 @@ public class PrepareEbootPatchCreatorAndVerifyStep : Step
         CommonStepInputs.ServerUrl,
     ];
 
+    public override string Name { get; } = "Preparing RPCS3 patch creator";
     public override float Progress { get; protected set; }
     public override Task ExecuteAsync(CancellationToken cancellationToken = default)
     {

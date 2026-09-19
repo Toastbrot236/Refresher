@@ -8,6 +8,7 @@ public class SetupEmulatorAccessorStep : Step
     public SetupEmulatorAccessorStep(Pipeline pipeline) : base(pipeline)
     {}
 
+    public override string Name { get; } = "Preparing to access files inside your RPCS3 installation";
     public override float Progress { get; protected set; }
 
     public override List<StepInput> Inputs { get; } = [

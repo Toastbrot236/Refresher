@@ -12,6 +12,7 @@ public class InputElfStep : Step
         CommonStepInputs.ElfInput,
     ];
 
+    public override string Name { get; } = "Opening an EBOOT.ELF";
     public override float Progress { get; protected set; }
     public override Task ExecuteAsync(CancellationToken cancellationToken = default)
     {
