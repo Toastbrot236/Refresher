@@ -22,7 +22,7 @@ public class DownloadGameListStep : Step
         int i = 0;
         foreach (string gamePath in games)
         {
-            State.Logger.LogInfo(InfoRetrieval, $"Downloading information for game '{gamePath}'...");
+            State.Logger.LogInfo(LogType.InfoRetrieval, $"Downloading information for game '{gamePath}'...");
             
             GameInformation game = new()
             {
@@ -46,8 +46,8 @@ public class DownloadGameListStep : Step
                 }
                 catch(Exception e)
                 {
-                    State.Logger.LogWarning(InfoRetrieval, $"Failed to get information for '{game.TitleId}'. {tries} tries remaining...");
-                    State.Logger.LogWarning(InfoRetrieval, e.ToString());
+                    State.Logger.LogWarning(LogType.InfoRetrieval, $"Failed to get information for '{game.TitleId}'. {tries} tries remaining...");
+                    State.Logger.LogWarning(LogType.InfoRetrieval, e.ToString());
                     if (isConsole)
                         await Task.Delay(5000, cancellationToken);
                 }

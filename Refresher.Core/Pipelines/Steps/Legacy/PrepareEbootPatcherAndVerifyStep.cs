@@ -25,7 +25,7 @@ public class PrepareEbootPatcherAndVerifyStep : Step
         List<Message> messages = patcher.Verify(url, true); // TODO: handle autodiscover in pipelines
         foreach (Message message in messages)
         {
-            State.Logger.LogInfo(Patcher, message.ToString());
+            State.Logger.LogInfo(LogType.Patcher, message.ToString());
         }
 
         if (messages.Any(m => m.Level == MessageLevel.Error))

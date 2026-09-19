@@ -24,12 +24,12 @@ public class DownloadGameLicenseStep : Step
         bool found = false;
         foreach (string user in this.Pipeline.Accessor!.GetDirectoriesInDirectory(Path.Combine("home")))
         {
-            State.Logger.LogDebug(Crypto, $"Checking all license files in {user}");
+            State.Logger.LogDebug(LogType.Crypto, $"Checking all license files in {user}");
             string exdataFolder = Path.Combine(user, "exdata");
 
             if (!this.Pipeline.Accessor.DirectoryExists(exdataFolder))
             {
-                State.Logger.LogDebug(Crypto, $"Exdata folder doesn't exist for user {user}, skipping...");
+                State.Logger.LogDebug(LogType.Crypto, $"Exdata folder doesn't exist for user {user}, skipping...");
                 continue;
             }
             
@@ -39,7 +39,7 @@ public class DownloadGameLicenseStep : Step
                 if (!(contentId != null && licenseFile.Contains(contentId)) && !licenseFile.Contains(game.TitleId))
                     continue;
                 
-                State.Logger.LogDebug(Crypto, $"Found compatible rap: {licenseFile}");
+                State.Logger.LogDebug(LogType.Crypto, $"Found compatible rap: {licenseFile}");
 
                 string actDatPath = Path.Combine(user, "exdata", "act.dat");
                     
@@ -54,7 +54,7 @@ public class DownloadGameLicenseStep : Step
                 string downloadedLicenseFile = this.Pipeline.Accessor.DownloadFile(licenseFile);
                 File.Move(downloadedLicenseFile, Path.Join(licenseDir, Path.GetFileName(licenseFile)), true);
 
-                State.Logger.LogInfo(Crypto, $"Downloaded compatible license file {licenseFile}.");
+                State.Logger.LogInfo(LogType.Crypto, $"Downloaded compatible license file {licenseFile}.");
 
                 if(Path.GetFileNameWithoutExtension(licenseFile) == game.ContentId) 
                     found = true;
@@ -67,7 +67,7 @@ public class DownloadGameLicenseStep : Step
         if (!found)
         {
             this.Game.ShouldUseNpdrmEncryption = false;
-            State.Logger.LogWarning(Crypto, "Couldn't find a license file for {0}. For disc copies, this is normal. " +
+            State.Logger.LogWarning(LogType.Crypto, "Couldn't find a license file for {0}. For disc copies, this is normal. " +
                                             "For digital copies, this may present problems. Attempting to continue without it...", game.TitleId);
         }
         else

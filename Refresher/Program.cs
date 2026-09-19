@@ -31,12 +31,12 @@ public class Program
         State.InitializeLogger([new ConsoleSink(), new EventSink(), new SentryBreadcrumbSink()]);
         State.InitializeSentry();
         
-        State.Logger.LogInfo(OSIntegration, $"Refresher launched with args [{string.Join(',', args)}] (count: {args.Length})");
+        State.Logger.LogInfo(LogType.OSIntegration, $"Refresher launched with args [{string.Join(',', args)}] (count: {args.Length})");
         bool isCliInvocation = args.Length > 0 && !UrlAssociationHandler.IsArgsUrl(args) && !UrlAssociationHandler.IsArgsTryingToRegisterAssociations(args);
         
         if (isCliInvocation)
         {
-            State.Logger.LogInfo(OSIntegration, "Launching in CLI mode");
+            State.Logger.LogInfo(LogType.OSIntegration, "Launching in CLI mode");
             
             AppDomain.CurrentDomain.UnhandledException += (_, eventArgs) =>
             {
@@ -86,7 +86,7 @@ public class Program
             
             try
             {
-                State.Logger.LogInfo(OSIntegration, "Launching in GUI mode");
+                State.Logger.LogInfo(LogType.OSIntegration, "Launching in GUI mode");
 
                 Form form = UrlAssociationHandler.IsArgsUrl(args) ? FormFromUrl(args[0]) : new MainForm();
                 

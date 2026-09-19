@@ -335,7 +335,7 @@ public class PipelineForm<TPipeline> : RefresherForm, IAccessesPlatform where TP
             }
             catch (DirectoryNotFoundException)
             {
-                State.Logger.LogError(Accessor, "The games folder doesn't exist at that path. Please ensure you entered the right path/IP.");
+                State.Logger.LogError(LogType.Accessor, "The games folder doesn't exist at that path. Please ensure you entered the right path/IP.");
             }
             catch (Exception ex)
             {
@@ -391,7 +391,7 @@ public class PipelineForm<TPipeline> : RefresherForm, IAccessesPlatform where TP
                 }
                 catch(Exception e)
                 {
-                    State.Logger.LogWarning(InfoRetrieval, $"Failed to set image for {game}: {e}");
+                    State.Logger.LogWarning(LogType.InfoRetrieval, $"Failed to set image for {game}: {e}");
                 }
             }
 

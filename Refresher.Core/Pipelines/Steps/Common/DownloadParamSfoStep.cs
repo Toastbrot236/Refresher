@@ -33,7 +33,7 @@ public class DownloadParamSfoStep : Step
             if (sfoStream == null)
             {
                 if(game.TitleId != "TEST12345")
-                    State.Logger.LogWarning(InfoRetrieval, "The PARAM.SFO file does not exist. This usually means you haven't installed any updates for your game. Refresher will try to proceed anyways.");
+                    State.Logger.LogWarning(LogType.InfoRetrieval, "The PARAM.SFO file does not exist. This usually means you haven't installed any updates for your game. Refresher will try to proceed anyways.");
 
                 return Task.CompletedTask;
             }
@@ -57,21 +57,21 @@ public class DownloadParamSfoStep : Step
             this.Platform.WarnPrompt($"Couldn't load {game}'s PARAM.SFO: {e}\n\nRefresher will try to proceed anyways.");
             if (sfo != null)
             {
-                State.Logger.LogDebug(InfoRetrieval, $"PARAM.SFO version:{sfo.Version} dump:");
+                State.Logger.LogDebug(LogType.InfoRetrieval, $"PARAM.SFO version:{sfo.Version} dump:");
                 foreach ((string? key, object? value) in sfo.Table)
                 {
-                    State.Logger.LogDebug(InfoRetrieval, $"  '{key}' = '{value}'");
+                    State.Logger.LogDebug(LogType.InfoRetrieval, $"  '{key}' = '{value}'");
                 }
             }
             else
             {
-                State.Logger.LogWarning(InfoRetrieval, "PARAM.SFO was not read, can't dump to log");
+                State.Logger.LogWarning(LogType.InfoRetrieval, "PARAM.SFO was not read, can't dump to log");
             }
                 
             SentrySdk.CaptureException(e);
         }
 
-        State.Logger.LogInfo(InfoRetrieval, "Parsed PARAM.SFO: " + game);
+        State.Logger.LogInfo(LogType.InfoRetrieval, "Parsed PARAM.SFO: " + game);
         return Task.CompletedTask;
     }
 

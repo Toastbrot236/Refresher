@@ -12,13 +12,13 @@ public class EncryptGameEbootStep : Step
     {
         if (this.Game.ShouldUseNpdrmEncryption ?? this.Game.TitleId.StartsWith('N'))
         {
-            State.Logger.LogDebug(Crypto, "Will encrypt using Npdrm");
+            State.Logger.LogDebug(LogType.Crypto, "Will encrypt using Npdrm");
             LibSceToolSharp.SetNpdrmEncryptOptions();
             LibSceToolSharp.SetNpdrmContentId(this.Game.ContentId!);
         }
         else
         {
-            State.Logger.LogDebug(Crypto, "Will encrypt using Disc");
+            State.Logger.LogDebug(LogType.Crypto, "Will encrypt using Disc");
             LibSceToolSharp.SetDiscEncryptOptions();
         }
         

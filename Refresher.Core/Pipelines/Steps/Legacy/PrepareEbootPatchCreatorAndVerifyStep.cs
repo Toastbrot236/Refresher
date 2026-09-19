@@ -26,14 +26,14 @@ public class PrepareEbootPatchCreatorAndVerifyStep : Step
         patcher.GameName = this.Game.Name;
         patcher.GameVersion = this.Game.Version;
         
-        State.Logger.LogDebug(RPCS3, $"RPCS3 patches folder: {patcher.Rpcs3PatchFolder}");
+        State.Logger.LogDebug(LogType.RPCS3, $"RPCS3 patches folder: {patcher.Rpcs3PatchFolder}");
 
         this.Pipeline.Patcher = patcher;
 
         List<Message> messages = patcher.Verify(url, this.AutoDiscover?.UsesCustomDigestKey ?? false);
         foreach (Message message in messages)
         {
-            State.Logger.LogInfo(Patcher, message.ToString());
+            State.Logger.LogInfo(LogType.Patcher, message.ToString());
         }
 
         if (messages.Any(m => m.Level == MessageLevel.Error))
