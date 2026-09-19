@@ -9,12 +9,12 @@ using Refresher.Core;
 using Refresher.Core.Accessors;
 using Refresher.Core.Logging;
 using Refresher.Core.Patching;
-using Refresher.Core.Pipelines;
+using Refresher.Core.Patching.Pipelines;
+using Refresher.Core.Patching.Steps;
 using Refresher.Core.Platform;
 using Refresher.Core.Storage;
 using Refresher.Extensions;
 using Refresher.UI.Items;
-using Pipeline = Refresher.Core.Pipelines.Pipeline;
 
 namespace Refresher.UI;
 

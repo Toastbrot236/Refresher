@@ -7,7 +7,7 @@ using NotEnoughLogs.Sinks;
 using Refresher.CLI;
 using Refresher.Core;
 using Refresher.Core.Logging;
-using Refresher.Core.Pipelines.Lbp;
+using Refresher.Core.Patching.Pipelines.Lbp;
 using Refresher.UI;
 using Velopack;
 using Velopack.Logging;

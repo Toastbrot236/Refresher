@@ -1,5 +1,6 @@
 using System.Reflection;
-using Refresher.Core.Pipelines;
+using Refresher.Core.Patching.Pipelines;
+using Refresher.Core.Patching.Steps;
 
 namespace Refresher.Core.Accessors;
 
