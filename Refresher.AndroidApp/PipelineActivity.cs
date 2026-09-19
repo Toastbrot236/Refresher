@@ -4,7 +4,7 @@ using Android.Text;
 using Android.Views;
 using Refresher.Core;
 using Refresher.Core.Logging;
-using Refresher.Core.Pipelines;
+using Refresher.Core.Patching.Pipelines;
 using static Android.Views.ViewGroup.LayoutParams;
 
 namespace Refresher.AndroidApp;
