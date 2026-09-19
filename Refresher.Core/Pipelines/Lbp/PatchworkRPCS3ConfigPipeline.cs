@@ -1,4 +1,5 @@
 ﻿using Refresher.Core.Pipelines.Steps;
+using Refresher.Core.Pipelines.Steps.RPCS3;
 
 namespace Refresher.Core.Pipelines.Lbp;
 
