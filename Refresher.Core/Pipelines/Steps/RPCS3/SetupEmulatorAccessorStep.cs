@@ -1,6 +1,6 @@
 using Refresher.Core.Accessors;
 
-namespace Refresher.Core.Pipelines.Steps;
+namespace Refresher.Core.Pipelines.Steps.RPCS3;
 
 public class SetupEmulatorAccessorStep : Step
 {

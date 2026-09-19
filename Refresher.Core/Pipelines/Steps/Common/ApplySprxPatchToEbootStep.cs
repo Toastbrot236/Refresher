@@ -1,6 +1,6 @@
 ﻿using SPRXPatcher.Elf;
 
-namespace Refresher.Core.Pipelines.Steps;
+namespace Refresher.Core.Pipelines.Steps.Common;
 
 public class ApplySprxPatchToEbootStep : Step
 {

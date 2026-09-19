@@ -2,7 +2,7 @@
 using Refresher.Core.Accessors;
 using Refresher.Core.Platform;
 
-namespace Refresher.Core.Pipelines.Steps;
+namespace Refresher.Core.Pipelines.Steps.Common;
 
 public class UploadPatchworkSprxStep : Step
 {

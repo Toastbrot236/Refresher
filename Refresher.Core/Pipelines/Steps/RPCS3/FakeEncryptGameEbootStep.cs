@@ -7,7 +7,7 @@ using System.Security.Cryptography;
 using Refresher.Core.Native.Elf;
 using Refresher.Core.Native.Sce;
 
-namespace Refresher.Core.Pipelines.Steps;
+namespace Refresher.Core.Pipelines.Steps.RPCS3;
 
 public class FakeEncryptGameEbootStep : Step
 {

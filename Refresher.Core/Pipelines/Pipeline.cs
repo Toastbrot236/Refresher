@@ -3,6 +3,7 @@ using System.Diagnostics;
 using Refresher.Core.Accessors;
 using Refresher.Core.Patching;
 using Refresher.Core.Pipelines.Steps;
+using Refresher.Core.Pipelines.Steps.Common;
 using Refresher.Core.Platform;
 using Refresher.Core.Storage;
 using Refresher.Core.Verification.AutoDiscover;

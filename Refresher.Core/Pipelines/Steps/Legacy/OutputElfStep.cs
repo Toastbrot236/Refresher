@@ -1,6 +1,6 @@
 ﻿using Refresher.Core.Platform;
 
-namespace Refresher.Core.Pipelines.Steps;
+namespace Refresher.Core.Pipelines.Steps.Legacy;
 
 public class OutputElfStep : Step
 {

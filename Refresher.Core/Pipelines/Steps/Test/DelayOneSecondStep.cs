@@ -1,6 +1,6 @@
 using System.Diagnostics;
 
-namespace Refresher.Core.Pipelines.Steps;
+namespace Refresher.Core.Pipelines.Steps.Test;
 
 public class DelayOneSecondStep : Step
 {

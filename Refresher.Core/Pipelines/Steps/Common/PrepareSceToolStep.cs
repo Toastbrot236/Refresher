@@ -1,6 +1,6 @@
 using static SCEToolSharp.LibSceToolSharp;
 
-namespace Refresher.Core.Pipelines.Steps;
+namespace Refresher.Core.Pipelines.Steps.Common;
 
 public class PrepareSceToolStep : Step
 {

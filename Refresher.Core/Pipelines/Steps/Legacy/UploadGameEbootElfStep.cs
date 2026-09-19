@@ -1,6 +1,6 @@
 ﻿using Refresher.Core.Accessors;
 
-namespace Refresher.Core.Pipelines.Steps;
+namespace Refresher.Core.Pipelines.Steps.Legacy;
 
 public class UploadGameEbootElfStep : Step
 {

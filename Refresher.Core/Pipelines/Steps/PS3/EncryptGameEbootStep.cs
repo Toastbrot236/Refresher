@@ -1,6 +1,6 @@
 ﻿using SCEToolSharp;
 
-namespace Refresher.Core.Pipelines.Steps;
+namespace Refresher.Core.Pipelines.Steps.PS3;
 
 public class EncryptGameEbootStep : Step
 {

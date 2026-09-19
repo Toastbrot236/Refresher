@@ -1,7 +1,7 @@
 ﻿using System.Text;
 using Refresher.Core.Accessors;
 
-namespace Refresher.Core.Pipelines.Steps;
+namespace Refresher.Core.Pipelines.Steps.Common;
 
 public class UploadPatchworkConfigurationStep : Step
 {

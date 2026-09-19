@@ -1,7 +1,7 @@
 using Refresher.Core.Patching;
 using Refresher.Core.Storage;
 
-namespace Refresher.Core.Pipelines.Steps;
+namespace Refresher.Core.Pipelines.Steps.Common;
 
 public class DownloadIconStep : Step
 {

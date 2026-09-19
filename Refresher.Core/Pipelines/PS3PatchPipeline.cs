@@ -1,4 +1,6 @@
-﻿using Refresher.Core.Pipelines.Steps;
+﻿using Refresher.Core.Pipelines.Steps.Common;
+using Refresher.Core.Pipelines.Steps.Legacy;
+using Refresher.Core.Pipelines.Steps.PS3;
 
 namespace Refresher.Core.Pipelines;
 

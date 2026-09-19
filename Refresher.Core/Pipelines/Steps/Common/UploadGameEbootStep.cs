@@ -1,11 +1,12 @@
 ﻿using Refresher.Core.Accessors;
 
-namespace Refresher.Core.Pipelines.Steps;
+namespace Refresher.Core.Pipelines.Steps.Common;
 
-public class BackupGameEbootBeforeReplaceStep : Step
+public class UploadGameEbootStep : Step
 {
-    public BackupGameEbootBeforeReplaceStep(Pipeline pipeline) : base(pipeline)
-    {}
+    public UploadGameEbootStep(Pipeline pipeline) : base(pipeline)
+    {
+    }
 
     public override float Progress { get; protected set; }
     public override Task ExecuteAsync(CancellationToken cancellationToken = default)
@@ -16,13 +17,13 @@ public class BackupGameEbootBeforeReplaceStep : Step
             string usrDir = $"game/{titleId}/USRDIR";
         
             string eboot = Path.Combine(usrDir, "EBOOT.BIN");
-            string backup = Path.Combine(usrDir, "EBOOT.BIN.ORIG");
+            
+            if (this.Pipeline.Accessor!.FileExists(eboot))
+                this.Pipeline.Accessor.RemoveFile(eboot);
 
-            if (!this.Pipeline.Accessor!.FileExists(backup))
-            {
-                this.Progress = 0.5f;
-                this.Pipeline.Accessor.CopyFile(eboot, backup);
-            }
+            this.Progress = 0.5f;
+            
+            this.Pipeline.Accessor.UploadFile(this.Game.EncryptedEbootPath!, eboot);
         });
 
         return Task.CompletedTask;

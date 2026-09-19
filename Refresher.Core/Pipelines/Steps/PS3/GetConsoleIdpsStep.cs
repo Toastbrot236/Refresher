@@ -1,7 +1,7 @@
 ﻿using System.Diagnostics;
 using Refresher.Core.Accessors;
 
-namespace Refresher.Core.Pipelines.Steps;
+namespace Refresher.Core.Pipelines.Steps.PS3;
 
 public class GetConsoleIdpsStep : Step
 {

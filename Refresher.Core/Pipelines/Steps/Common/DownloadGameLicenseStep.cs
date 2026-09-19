@@ -1,6 +1,6 @@
 using Refresher.Core.Patching;
 
-namespace Refresher.Core.Pipelines.Steps;
+namespace Refresher.Core.Pipelines.Steps.Common;
 
 public class DownloadGameLicenseStep : Step
 {

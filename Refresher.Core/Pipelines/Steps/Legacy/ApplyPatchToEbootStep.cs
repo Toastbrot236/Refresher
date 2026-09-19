@@ -1,4 +1,4 @@
-namespace Refresher.Core.Pipelines.Steps;
+namespace Refresher.Core.Pipelines.Steps.Legacy;
 
 public class ApplyPatchToEbootStep : Step
 {

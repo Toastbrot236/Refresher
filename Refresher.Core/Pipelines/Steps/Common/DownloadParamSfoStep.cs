@@ -2,7 +2,7 @@ using Refresher.Core.Accessors;
 using Refresher.Core.Patching;
 using Refresher.Core.Verification;
 
-namespace Refresher.Core.Pipelines.Steps;
+namespace Refresher.Core.Pipelines.Steps.Common;
 
 public class DownloadParamSfoStep : Step
 {
