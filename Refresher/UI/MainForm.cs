@@ -55,7 +55,7 @@ public class MainForm : RefresherForm
 
             #if DEBUG
             new Label { Text = "Debugging options:" },
-            this.PipelineButton<ExamplePipeline>("Example Pipeline"),
+            new Label { Text = "None, currently..." },
             #endif
         ]);
 
