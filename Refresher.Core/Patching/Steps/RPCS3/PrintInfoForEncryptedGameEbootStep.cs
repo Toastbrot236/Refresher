@@ -12,7 +12,7 @@ public class PrintInfoForEncryptedGameEbootStep : Step
     public override float Progress { get; protected set; }
     public override Task ExecuteAsync(CancellationToken cancellationToken = default)
     {
-        LibSceToolSharp.PrintInfos(this.Game.EncryptedEbootPath);
+        LibSceToolSharp.PrintInfos(this.Game.EncryptedEbootPath ?? "(no encrypted EBOOT path)");
         return Task.CompletedTask;
     }
 }

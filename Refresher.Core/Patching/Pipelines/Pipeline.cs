@@ -1,4 +1,3 @@
-using System.Collections.Frozen;
 using System.Diagnostics;
 using Refresher.Core.Accessors;
 using Refresher.Core.Patching.Steps;
@@ -13,9 +12,6 @@ namespace Refresher.Core.Patching.Pipelines;
 public abstract class Pipeline : IAccessesPlatform
 {
     public abstract string Name { get; }
-    
-    public readonly Dictionary<string, string> Inputs = [];
-    public FrozenSet<StepInput> RequiredInputs { get; private set; } = null!;
 
     public IPlatformInterface Platform { get; private set; } = null!;
 
@@ -26,6 +22,12 @@ public abstract class Pipeline : IAccessesPlatform
     public GameInformation? GameInformation { get; internal set; }
     public EncryptionDetails? EncryptionDetails { get; internal set; }
     public AutoDiscoverResponse? AutoDiscover { get; internal set; }
+
+    /// <summary>
+    /// Contains user-entered data used by the steps of this pipeline, e.g. server URL and digest key for LBP,
+    /// passed by the GUI controller. 
+    /// </summary>
+    public UserEnteredContext? UserEntered { get; internal set; }
 
     public virtual string? GuideLink => null;
     public virtual string? ShorthandUrlId => null;
@@ -61,26 +63,30 @@ public abstract class Pipeline : IAccessesPlatform
     private byte _currentStepIndex;
     private Step? _currentStep;
 
+    /// <summary>
+    /// Prefers the URL from AutoDiscover, but will fall back to the user-entered one
+    /// </summary>
+    public string GetServerUrl()
+        => this.AutoDiscover?.Url ?? this.UserEntered!.EnteredServerUrl;
+
     public void Initialize(IPlatformInterface platform)
     {
         this.Platform = platform;
-
-        List<StepInput> requiredInputs = [];
         
         this._steps = new List<Step>(this.StepTypes.Count + 1);
         
+        // Automatically add accessor preparation step of the used accessor as the first step,
+        // so we don't have to specify it on every pipeline
         if(this.SetupAccessorStepType != null)
-            this.AddStep(requiredInputs, this.SetupAccessorStepType);
+            this.AddStep(this.SetupAccessorStepType);
 
         foreach (Type type in this.StepTypes)
-            this.AddStep(requiredInputs, type);
-        
-        this.RequiredInputs = requiredInputs.DistinctBy(i => i.Id).ToFrozenSet();
+            this.AddStep(type);
     }
 
     public void Reset()
     {
-        this.Inputs.Clear();
+        this.UserEntered = null;
 
         this.State = PipelineState.NotStarted;
 
@@ -96,14 +102,13 @@ public abstract class Pipeline : IAccessesPlatform
         this.EncryptionDetails = null;
     }
 
-    private void AddStep(List<StepInput> requiredInputs, Type type)
+    private void AddStep(Type type)
     {
         Debug.Assert(type.IsAssignableTo(typeof(Step)));
 
         Step step = (Step)Activator.CreateInstance(type, this)!;
 
         this._steps.Add(step);
-        requiredInputs.AddRange(step.Inputs);
     }
 
     public async Task ExecuteAsync(CancellationToken cancellationToken = default)
@@ -114,28 +119,8 @@ public abstract class Pipeline : IAccessesPlatform
             throw new InvalidOperationException("Pipeline must be restarted before it can be executed again.");
         }
 
-        foreach (StepInput input in this.RequiredInputs)
-        {
-            if (!this.Inputs.TryGetValue(input.Id, out string? data))
-            {
-                this.State = PipelineState.Error;
-                throw new InvalidOperationException($"Input {input.Id} was not provided to the pipeline before execution.");
-            }
-
-            if (input.Required && string.IsNullOrWhiteSpace(data))
-            {
-                this.State = PipelineState.Error;
-                this.Platform.WarnPrompt($"Please fill out the required '{input.Name}' input before proceeding, as it is a required field.");
-                return;
-            }
-        }
-        
-        if(this.Inputs.Count != 0)
-            GlobalState.Logger.LogTrace(LogType.Pipeline, "Pipeline inputs:");
-        foreach ((string? key, string? value) in this.Inputs)
-        {
-            GlobalState.Logger.LogTrace(LogType.Pipeline, $"  '{key}' = '{value}'");
-        }
+        // GUI controller should ensure beforehand that all required inputs were entered
+        // TODO print UserEnteredContext values to logs here
 
         GlobalState.Logger.LogInfo(LogType.Pipeline, $"Pipeline {this.GetType().Name} started.");
         this.State = PipelineState.Running;
@@ -150,38 +135,8 @@ public abstract class Pipeline : IAccessesPlatform
             PreviousInputStorage.ApplyFromPipeline(this);
             PreviousInputStorage.Write();
 
-            if (!this.Inputs.TryGetValue("url", out string? url))
-            {
-                this.Platform.InfoPrompt("Patch successful!");
-                return;
-            }
-            
-            QuestionResult result = this.Platform.Ask(
-                "Patch successful!\r\n\r\n" +
-                        "Some servers like Bonsai require registering an account to play. " +
-                        "Would you like to open the server's website?");
-
-            if (result == QuestionResult.Yes)
-            {
-                try
-                {
-                    Uri oldUri = new(url);
-                    UriBuilder builder = new()
-                    {
-                        Host = oldUri.Host,
-                        Scheme = "https",
-                        Path = "/register",
-                        Port = 443,
-                    };
-
-                    this.Platform.OpenUrl(builder.Uri);
-                }
-                catch (Exception e)
-                {
-                    GlobalState.Logger.LogWarning(LogType.Platform, "Failed to open server URL: " + e);
-                    this.Platform.WarnPrompt("Sorry, we couldn't open the URL. You can usually reach it by using the same link as the one you gave to Refresher.");
-                }
-            }
+            this.Platform.InfoPrompt("Patch successful!");
+            return;
         }
     }
 

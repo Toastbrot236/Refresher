@@ -9,21 +9,18 @@ public class PrepareEbootPatchCreatorAndVerifyStep : Step
     public PrepareEbootPatchCreatorAndVerifyStep(Pipeline pipeline) : base(pipeline)
     {}
 
-    public override List<StepInput> Inputs =>
-    [
-        CommonStepInputs.RPCS3Folder,
-        CommonStepInputs.ServerUrl,
-    ];
-
     public override string Name { get; } = "Preparing RPCS3 patch creator";
     public override float Progress { get; protected set; }
     public override Task ExecuteAsync(CancellationToken cancellationToken = default)
     {
-        string url = this.Pipeline.Inputs["url"];
+        string url = this.Pipeline.GetServerUrl();
+        string? rpcs3DevHdd0Path = this.UserEntered.Rpcs3DevHdd0Path;
+        if (rpcs3DevHdd0Path == null)
+            return this.Fail("The RPCS3 dev_hdd0 folder path was not specified.");
 
         EbootPatcher patcher = new(File.Open(this.Game.DecryptedEbootPath!, FileMode.Open, FileAccess.ReadWrite));
         patcher.GenerateRpcs3Patch = true;
-        patcher.Rpcs3PatchFolder = Path.GetFullPath(Path.Combine(this.Pipeline.Inputs["hdd0-path"], "..", "patches"));
+        patcher.Rpcs3PatchFolder = Path.GetFullPath(Path.Combine(rpcs3DevHdd0Path, "..", "patches"));
         patcher.TitleId = this.Game.TitleId;
         patcher.GameName = this.Game.Name;
         patcher.GameVersion = this.Game.Version;

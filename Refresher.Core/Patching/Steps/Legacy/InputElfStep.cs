@@ -7,16 +7,11 @@ public class InputElfStep : Step
     public InputElfStep(Pipeline pipeline) : base(pipeline)
     {}
 
-    public override List<StepInput> Inputs =>
-    [
-        CommonStepInputs.ElfInput,
-    ];
-
     public override string Name { get; } = "Opening an EBOOT.ELF";
     public override float Progress { get; protected set; }
     public override Task ExecuteAsync(CancellationToken cancellationToken = default)
     {
-        string elfInput = this.Inputs.First().GetValueFromPipeline(this.Pipeline);
+        string elfInput = this.UserEntered.InputElfPath ?? "";
         if (!File.Exists(elfInput))
             return this.Fail("The Input .ELF could not be found.");
 

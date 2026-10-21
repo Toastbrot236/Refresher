@@ -9,16 +9,11 @@ public class PrepareEbootPatcherAndVerifyStep : Step
     public PrepareEbootPatcherAndVerifyStep(Pipeline pipeline) : base(pipeline)
     {}
 
-    public override List<StepInput> Inputs =>
-    [
-        CommonStepInputs.ServerUrl,
-    ];
-
     public override string Name { get; } = "Preparing PS3 EBOOT patcher";
     public override float Progress { get; protected set; }
     public override Task ExecuteAsync(CancellationToken cancellationToken = default)
     {
-        string url = this.Pipeline.Inputs["url"];
+        string url = this.Pipeline.GetServerUrl();
 
         EbootPatcher patcher = new(File.Open(this.Game.DecryptedEbootPath!, FileMode.Open, FileAccess.ReadWrite));
 

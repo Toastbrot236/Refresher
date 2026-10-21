@@ -11,13 +11,9 @@ public class SetupPS3AccessorStep : Step
     public override string Name { get; } = "Preparing to access files on your PS3";
     public override float Progress { get; protected set; }
 
-    public override List<StepInput> Inputs { get; } = [
-        CommonStepInputs.ConsoleIP,
-    ];
-
     public override Task ExecuteAsync(CancellationToken cancellationToken = default)
     {
-        string remoteIp = CommonStepInputs.ConsoleIP.GetValueFromPipeline(this.Pipeline);
+        string remoteIp = this.UserEntered.ConsoleIP ?? "";
         State.Logger.LogDebug(LogType.PS3, $"Using PS3 IP {remoteIp}");
         
         PatchAccessor.Try(this, () =>

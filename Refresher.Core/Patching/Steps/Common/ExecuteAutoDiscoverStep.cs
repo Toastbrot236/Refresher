@@ -15,12 +15,7 @@ public class ExecuteAutoDiscoverStep : Step
     public override float Progress { get; protected set; }
     public override Task ExecuteAsync(CancellationToken cancellationToken = default)
     {
-        if (this.Pipeline.UserContext == null)
-        {
-            throw new InvalidDataException("Cannot execute AutoDiscover if we don't know what server URL the user has entered!");
-        }
-
-        AutoDiscoverResponse? autoDiscover = AutoDiscoverClient.InvokeAutoDiscoverAsync(this.Pipeline.UserContext.EnteredServerUrl, this.Platform, cancellationToken).Result;
+        AutoDiscoverResponse? autoDiscover = AutoDiscoverClient.InvokeAutoDiscoverAsync(this.UserEntered.EnteredServerUrl, this.Platform, cancellationToken).Result;
         if (autoDiscover != null)
         {
             this.Pipeline.AutoDiscover = autoDiscover;
