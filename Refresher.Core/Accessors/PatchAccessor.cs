@@ -6,6 +6,7 @@ namespace Refresher.Core.Accessors;
 
 public abstract class PatchAccessor
 {
+    public abstract string Name { get; }
     public abstract bool Available { get; }
     
     public abstract bool DirectoryExists(string path);
@@ -99,5 +100,10 @@ public abstract class PatchAccessor
     {
         State.Logger.LogError(LogType.Accessor, "Filesystem error: " + ex);
         step.Fail($"Something went wrong while accessing the filesystem: {ex.GetType().Name}: {ex.Message}");
+    }
+
+    public override string ToString()
+    {
+        return $"'{this.Name}' ({this.GetType().Name})";
     }
 }

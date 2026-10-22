@@ -122,14 +122,14 @@ public abstract class Pipeline : IAccessesPlatform
         // GUI controller should ensure beforehand that all required inputs were entered
         // TODO print UserEnteredContext values to logs here
 
-        GlobalState.Logger.LogInfo(LogType.Pipeline, $"Pipeline {this.GetType().Name} started.");
+        GlobalState.Logger.LogInfo(LogType.Pipeline, $"Pipeline {this} started.");
         this.State = PipelineState.Running;
 
         bool success = await this.RunListOfSteps(this._steps, cancellationToken);
 
         if (success)
         {
-            GlobalState.Logger.LogInfo(LogType.Pipeline, $"Pipeline {this.GetType().Name} finished!");
+            GlobalState.Logger.LogInfo(LogType.Pipeline, $"Pipeline {this} finished!");
             this.State = PipelineState.Finished;
         
             PreviousInputStorage.ApplyFromPipeline(this);
@@ -146,7 +146,7 @@ public abstract class Pipeline : IAccessesPlatform
         byte i = 1;
         foreach (Step step in steps)
         {
-            GlobalState.Logger.LogInfo(LogType.Pipeline, $"Executing {step.GetType().Name}... ({i}/{steps.Count})");
+            GlobalState.Logger.LogInfo(LogType.Pipeline, $"Executing {step}... ({i}/{steps.Count})");
             this._currentStepIndex = i;
             this._currentStep = step;
 
@@ -270,7 +270,12 @@ public abstract class Pipeline : IAccessesPlatform
 
     public void Fail(Step? step, string reason)
     {
-        this.Platform.ErrorPrompt($"{step?.GetType().Name ?? "Pipeline"} failed: {reason}\n\nPatching cannot continue.");
+        this.Platform.ErrorPrompt($"{step?.ToString() ?? "Unknown step"} failed: {reason}\n\nPatching cannot continue.");
         this.State = PipelineState.Error;
+    }
+
+    public override string ToString()
+    {
+        return $"'{this.Name}' ({this.GetType().Name})";
     }
 }

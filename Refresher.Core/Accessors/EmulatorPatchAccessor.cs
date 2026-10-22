@@ -2,6 +2,7 @@ namespace Refresher.Core.Accessors;
 
 public class EmulatorPatchAccessor : PatchAccessor
 {
+    public override string Name { get; } = "RPCS3";
     public EmulatorPatchAccessor(string basePath)
     {
         this.BasePath = basePath;

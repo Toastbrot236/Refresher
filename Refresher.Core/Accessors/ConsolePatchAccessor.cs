@@ -5,6 +5,7 @@ namespace Refresher.Core.Accessors;
 
 public class ConsolePatchAccessor : PatchAccessor, IDisposable
 {
+    public override string Name { get; } = "PS3";
     private readonly FtpClient _client;
     private const string BasePath = "/dev_hdd0/";
     private readonly string _remoteIp;

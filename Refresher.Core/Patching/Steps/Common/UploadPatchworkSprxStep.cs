@@ -45,7 +45,7 @@ public class UploadPatchworkSprxStep : Step
 
                 if (readStream == null)
                 {
-                    await this.Fail($"The sprx file for {this.Pipeline.Accessor.GetType().Name} is missing from this build! " +
+                    await this.Fail($"The sprx file for {this.Pipeline.Accessor} is missing from this build! " +
                                     $"Please tell a developer on Discord/GitHub!");
                     
                     return;
