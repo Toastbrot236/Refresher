@@ -12,7 +12,7 @@ public static class PreviousInputStorage
     private static readonly string DirectoryPath;
     private static readonly string FilePath;
     
-    public static readonly Dictionary<string, string> StoredInputs = [];
+    public static UserEnteredContext? Inputs;
     
     static PreviousInputStorage()
     {
@@ -29,46 +29,20 @@ public static class PreviousInputStorage
         using FileStream stream = File.OpenRead(FilePath);
         using StreamReader reader = new(stream);
 
-        while (!reader.EndOfStream)
-        {
-            string? line = reader.ReadLine();
-            if (line == null)
-                break;
-            
-            if(string.IsNullOrWhiteSpace(line) || line.StartsWith(';') || !line.Contains('='))
-                continue;
-
-            int equals = line.IndexOf('=');
-
-            string key = line[..equals];
-            string value = line[(equals + 1)..];
-
-            StoredInputs[key] = value;
-        }
+        Inputs = UserEnteredContext.FromIni(reader);
     }
 
     public static void ApplyFromPipeline(Pipeline pipeline)
     {
-        foreach ((string key, string value) in pipeline.Inputs)
-        {
-            StoredInputs[key] = value;
-        }
+        Inputs = pipeline.UserEntered;
     }
 
     public static void Write()
     {
+        // Can't write if we don't know what the inputs are
+        if (Inputs == null) return;
+
         Directory.CreateDirectory(DirectoryPath);
-        
-        using FileStream stream = File.OpenWrite(FilePath);
-        using StreamWriter writer = new(stream);
-        foreach ((string key, string value) in StoredInputs)
-        {
-            writer.Write(key);
-            writer.Write('=');
-            writer.WriteLine(value);
-        }
-        
-        writer.Flush();
-        stream.Flush();
+        File.WriteAllText(FilePath, Inputs.ToIni());
     }
 }
