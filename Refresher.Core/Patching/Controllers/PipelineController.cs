@@ -26,7 +26,8 @@ public abstract class PipelineController : IAccessesPlatform
     public bool UsesPatchwork { get; protected init; }
 
     /// <summary>
-    /// Used by the constructor to know what pipeline to default to as the current one.
+    /// Type of the pipeline which does the main operation of the form (usually this will be a patch pipeline).
+    /// This is also what Initialize() will currently use to determine the default pipeline for CurrentPipeline.
     /// </summary>
     public abstract Type MainPipelineType { get; }
 
@@ -38,7 +39,7 @@ public abstract class PipelineController : IAccessesPlatform
 
     /// <summary>
     /// Type of pipeline to use when verifying the validity of the user's entered server data (usually just the URL).
-    /// This will usually be AutoDiscover, but this way we can also use other pipelines for this if that's ever needed.
+    /// This will usually be AutoDiscover, but this way we can also use other pipelines for this incase that's ever needed.
     /// </summary>
     public virtual Type? VerifyServerInputPipelineType { get; } = null;
 
