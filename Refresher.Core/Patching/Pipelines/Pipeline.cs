@@ -17,21 +17,27 @@ public abstract class Pipeline : IAccessesPlatform
     public readonly Dictionary<string, string> Inputs = [];
     public FrozenSet<StepInput> RequiredInputs { get; private set; } = null!;
 
-    public IPlatformInterface Platform { get; private set; } = null!;
-
-    internal List<GameInformation>? GameList { get; set; } = null;
+    public IPlatformInterface Platform => this.Context.Platform;
+    internal List<GameInformation>? GameList => this.Context.GameList;
+    public AutoDiscoverResponse? AutoDiscover => this.Context.AutoDiscover;
+    public IEnumerable<string> GameNameWhitelist => this.Context.GameNameWhitelist;
+    /// <summary>
+    /// Initialized by PipelineController. Some info gets set by the controller (e.g. game name lists, user-entered inputs),
+    /// some gets set by its (other) pipelines (e.g. game list, AutoDiscover)
+    /// </summary>
+    public PipelineContext Context { get; set; } = null!;
     
-    public IPatcher? Patcher { get; internal set; }
-    public PatchAccessor? Accessor { get; internal set; }
-    public GameInformation? GameInformation { get; internal set; }
-    public EncryptionDetails? EncryptionDetails { get; internal set; }
-    public AutoDiscoverResponse? AutoDiscover { get; internal set; }
+    // These are not in the context because we don't need to share them between pipelines.
+    // Every pipelines initiates them themselves, e.g. incase something happened to the game or target platform
+    // inbetween pipeline runs by the same controller.
+    public IPatcher? Patcher { get; set; }
+    public PatchAccessor? Accessor { get; set; }
+    public GameInformation? GameInformation { get; set; }
+    public EncryptionDetails? EncryptionDetails { get; set; }
 
     public virtual string? GuideLink => null;
     public virtual string? ShorthandUrlId => null;
 
-    public virtual IEnumerable<string> GameNameFilters => [];
-    
     public PipelineState State { get; private set; } = PipelineState.NotStarted;
     
     public float Progress
