@@ -60,11 +60,16 @@ public abstract class PipelineController : IAccessesPlatform
     /// <summary>
     /// Contains data like user-entered inputs, AutoDiscover results, and other data shared and used by the pipelines.
     /// </summary>
-    public PipelineContext Context { get; protected init; }
+    public PipelineContext Context { get; protected set; } = null!;
     public IPlatformInterface Platform => this.Context.Platform;
     public bool EnableFormControls => this.CurrentPipeline.State != PipelineState.Running;
 
-    public PipelineController(IPlatformInterface platform) // TODO blacklist
+    public PipelineController()
+    {
+        
+    }
+
+    public void Initialize(IPlatformInterface platform)
     {
         this.Context = new()
         {
@@ -118,8 +123,9 @@ public abstract class PipelineController : IAccessesPlatform
         await pipeline.ExecuteAsync();
     }
 
-    public Pipeline? GetPipeline(Type type)
+    public Pipeline? GetPipeline(Type? type)
     {
+        if (type == null) return null;
         return this._pipelines.GetValueOrDefault(type);
     }
 }

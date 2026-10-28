@@ -9,6 +9,7 @@ using Refresher.Core;
 using Refresher.Core.Accessors;
 using Refresher.Core.Logging;
 using Refresher.Core.Patching;
+using Refresher.Core.Patching.Controllers;
 using Refresher.Core.Patching.Pipelines;
 using Refresher.Core.Patching.Steps;
 using Refresher.Core.Platform;
@@ -18,10 +19,10 @@ using Refresher.UI.Items;
 
 namespace Refresher.UI;
 
-public class PipelineForm<TPipeline> : RefresherForm, IAccessesPlatform where TPipeline : Pipeline, new()
+public class PipelineForm<TPipelineController> : RefresherForm, IAccessesPlatform where TPipelineController : PipelineController, new()
 {
-    private TPipeline? _pipeline;
-    private PipelineController? _controller;
+    private TPipelineController? _controller;
+    private Pipeline? _mainPipeline;
 
     private readonly Button _button;
     private readonly Button? _revertButton;
@@ -41,12 +42,17 @@ public class PipelineForm<TPipeline> : RefresherForm, IAccessesPlatform where TP
     private bool _usedAutoDiscover = false;
     private bool _connected = false;
 
+    private Type _mainPipelineType { get; init; }
+    private Type? _revertPatchPipelineType { get; init; }
+    private Type? _verifyServerInputPipelineType { get; init; }
+    private Type? _downloadGameDataPipelineType { get; init; }
+
     public PipelineForm() : this(null)
     {
         
     }
     
-    public PipelineForm(AutoApplyInformation? autoApply) : base(typeof(TPipeline).Name, new Size(700, -1), false)
+    public PipelineForm(AutoApplyInformation? autoApply) : base(typeof(TPipelineController).Name, new Size(700, -1), false)
     {
         this._autoApply = autoApply;
         this.Platform = new EtoPlatformInterface(this);
@@ -84,19 +90,24 @@ public class PipelineForm<TPipeline> : RefresherForm, IAccessesPlatform where TP
         this.InitializePipeline();
         this.InitializeFormStateUpdater();
         
-        if (this._pipeline?.ReplacesEboot ?? false)
+        // Only offer revert if our controller has a pipeline for it, otherwise assume it doesn't support reverting.
+        if (this._controller?.RevertPatchPipelineType == null)
         {
             this._revertButton = new Button(this.OnRevertEbootClick) { Text = "Revert Patch" };
             layout.Items.Insert(2, this._revertButton);
         }
         
-        if (this._pipeline?.RequiredInputs.Any(i => i == CommonStepInputs.ServerUrl) ?? false)
+        // Only offer manual server verification if our controller has a pipeline for it, 
+        // otherwise assume it doesn't support it.
+        // This is still called AutoDiscover on the GUI because there are no controllers using anything else for this yet,
+        // so I don't care too much about it right now...
+        if (this._controller?.VerifyServerInputPipelineType == null)
         {
             this._autoDiscoverButton = new Button(this.OnAutoDiscoverClick) { Text = "AutoDiscover" };
             layout.Items.Insert(3, this._autoDiscoverButton);
         }
         
-        if ((this._pipeline?.RequiredInputs.Any(i => i == CommonStepInputs.LobbyPassword) ?? false) && this._pipeline?.ShorthandUrlId != null)
+        if (this._controller?.UsesPatchwork ?? false)
         {
             Button joinKeyButton = new(this.OnCopyJoinKeyClick) { Text = "Copy Join Key URL" };
             layout.Items.Insert(4, joinKeyButton);
@@ -134,11 +145,11 @@ public class PipelineForm<TPipeline> : RefresherForm, IAccessesPlatform where TP
             return;
         
         // adjust progress bars
-        this._progressBar.Value = (int)((this._pipeline?.Progress ?? 0) * 100);
-        this._currentProgressBar.Value = (int)(this._pipeline?.CurrentProgress * 100 ?? 0);
-        this._progressBar.ToolTip = this._pipeline?.State.ToString() ?? "Uninitialized";
+        this._progressBar.Value = (int)((this._controller?.CurrentPipeline.Progress ?? 0) * 100);
+        this._currentProgressBar.Value = (int)(this._controller?.CurrentPipeline.CurrentProgress * 100 ?? 0);
+        this._progressBar.ToolTip = this._controller?.CurrentPipeline.State.ToString() ?? "Uninitialized";
 
-        bool enableControls = this._controller.EnableControls;
+        bool enableControls = this._controller?.EnableFormControls ?? false;
         
         // highlight progress bars while patching
         this._currentProgressBar.Enabled = !enableControls;
@@ -147,13 +158,22 @@ public class PipelineForm<TPipeline> : RefresherForm, IAccessesPlatform where TP
         // disable other things
         this._formLayout.Enabled = enableControls;
         if(this._autoDiscoverButton != null)
-            this._autoDiscoverButton.Enabled = enableControls && this._pipeline?.AutoDiscover == null;
+        {
+            // TODO ability to manually unlock AutoDiscover
+            this._autoDiscoverButton.Enabled = enableControls && this._controller?.Context.AutoDiscover == null;
+        }
+            
         if(this._revertButton != null)
+        {
             this._revertButton.Enabled = enableControls;
+        }
 
         // set text of autodiscover button
         if (this._autoDiscoverButton != null)
-            this._autoDiscoverButton.Text = this._controller.AutoDiscoverButtonText;
+        {
+            this._autoDiscoverButton.Text = this._controller?.GetPipeline(this._controller?.VerifyServerInputPipelineType)?.GetStateText()
+        }
+            
 
         this._button.Text = this._controller.MainButtonText;
     }
@@ -162,9 +182,9 @@ public class PipelineForm<TPipeline> : RefresherForm, IAccessesPlatform where TP
 
     private void InitializePipeline()
     {
-        this._pipeline = new TPipeline();
-        this._controller = new PipelineController(this._pipeline, Application.Instance.Invoke);
-        this._pipeline.Initialize(this.Platform);
+        this._controller = new TPipelineController();
+        this._controller.Initialize(this.Platform);
+        this._mainPipelineType = this._controller.MainPipelineType;
         
         PreviousInputStorage.Read();
         this._formLayout.Rows.Clear();
