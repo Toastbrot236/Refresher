@@ -1,132 +1,118 @@
+using System.Diagnostics;
+using Refresher.Core.Patching.Pipelines;
 using Refresher.Core.Platform;
-using Refresher.Core.Verification.AutoDiscover;
+using Refresher.Core.Storage;
 
 namespace Refresher.Core.Patching.Controllers;
 
 /// <summary>
-/// A set of common utilities to assist in controlling a pipeline from a UI.
+/// Contains pipelines and other model stuff used by a particular form or page.
 /// </summary>
-public sealed class PipelineController : IAccessesPlatform
+public abstract class PipelineController : IAccessesPlatform
 {
-    private readonly Pipeline _pipeline;
-    private readonly Action<Action> _uiThread;
-    
-    private CancellationTokenSource? _cts;
-    private CancellationTokenSource? _autoDiscoverCts;
-    
-    public IPlatformInterface Platform => this._pipeline.Platform;
+    public abstract string Name { get; }
+    /// <summary>
+    /// Empty = don't do any filtering, show all games regardless of their name
+    /// </summary>
+    public virtual string[] GameNameWhitelist { get; } = [];
 
-    public PipelineController(Pipeline pipeline, Action<Action> uiThread)
+    /// <summary>
+    /// Used to get the guide page URL, aswell as the join key URL.
+    /// </summary>
+    public virtual string ShorthandUrlId { get; } = "";
+    public string GuideLink => $"https://docs.littlebigrefresh.com/{this.ShorthandUrlId}";
+
+    public bool RequiresJoinKey { get; protected init; }
+
+    /// <summary>
+    /// Used by the constructor to know what pipeline to default to as the current one.
+    /// </summary>
+    public abstract Type MainPipelineType { get; }
+
+    /// <summary>
+    /// Type of pipeline to use when reverting the patch done by the main pipeline.
+    /// Not all our forms have a revert option, so this is nullable.
+    /// </summary>
+    public virtual Type? RevertPatchPipelineType { get; } = null;
+
+    /// <summary>
+    /// Type of pipeline to use when verifying the validity of the user's entered server data (usually just the URL).
+    /// This will usually be AutoDiscover, but this way we can also use other pipelines for this if that's ever needed.
+    /// </summary>
+    public virtual Type? VerifyServerInputPipelineType { get; } = null;
+
+    /// <summary>
+    /// Type of pipeline to use when downloading data from the target platform, usually game metadata to show.
+    /// </summary>
+    public virtual Type? DownloadGameDataPipelineType { get; } = null;
+
+    /// <summary>
+    /// The pipelines managed by this controller. No hard-coded fields here to avoid duplicate execution code.
+    /// </summary>
+    private Dictionary<Type, Pipeline> _pipelines { get; } = [];
+
+    /// <summary>
+    /// The current pipeline being executed (or the last one that was executed), for stuff like progress bars.
+    /// </summary>
+    public Pipeline CurrentPipeline { get; protected set; } = null!;
+
+    /// <summary>
+    /// Contains data like user-entered inputs, AutoDiscover results, and other data shared and used by the pipelines.
+    /// </summary>
+    public PipelineContext Context { get; protected init; }
+    public IPlatformInterface Platform => this.Context.Platform;
+
+    public PipelineController(IPlatformInterface platform) // TODO blacklist
     {
-        this._pipeline = pipeline;
-        this._uiThread = uiThread;
-    }
-
-    public bool PipelineRunning => this._cts != null;
-    public bool AutoDiscoverRunning => this._autoDiscoverCts != null;
-
-    public bool EnableControls => this._pipeline.State != PipelineState.Running;
-    
-    public string MainButtonText => this._pipeline.State switch
-    {
-        PipelineState.NotStarted => "Patch!",
-        PipelineState.Running => "Patching... (click to cancel)",
-        PipelineState.Finished => "Complete!",
-        PipelineState.Cancelled => "Patch!",
-        PipelineState.Error => "Retry (patch failed!)",
-        _ => throw new ArgumentOutOfRangeException(),
-    };
-
-    private string? _autoDiscoverButtonText;
-    public string AutoDiscoverButtonText
-    {
-        get
+        this.Context = new()
         {
-            if(this._autoDiscoverButtonText != null)
-                return this._autoDiscoverButtonText;
+            Platform = platform,
+            GameNameWhitelist = this.GameNameWhitelist,
+            UserInputs = PreviousInputStorage.Inputs ?? new(), // load from file if available
+        };
 
-            if (this.AutoDiscoverRunning)
-                return "Running AutoDiscover... (click to cancel)";
-            
-            return "AutoDiscover";
-        }
+        // Build a dictionary mapping type -> pipeline for both the main type and the additional types.
+        // This way we don't need to duplicate execution code, and forms can easily either use hardcoded types,
+        // or use the controller's public type properties.
+        this.AddPipeline(this.MainPipelineType);
+        this.AddPipeline(this.RevertPatchPipelineType);
+        this.AddPipeline(this.VerifyServerInputPipelineType);
+        this.AddPipeline(this.DownloadGameDataPipelineType);
+
+        // Set current pipeline to the main one by default.
+        Pipeline? defaultPipeline = this._pipelines.GetValueOrDefault(this.MainPipelineType);
+        Debug.Assert(defaultPipeline != null);
+
+        this.CurrentPipeline = defaultPipeline!;
     }
 
-    public void CancelPipeline()
+    private void AddPipeline(Type? type)
     {
-        this._cts?.Cancel();
-    }
-    
-    public void CancelAutoDiscover()
-    {
-        this._autoDiscoverCts?.Cancel();
-    }
+        if (type == null) return;
 
-    public void MainButtonClick()
-    {
-        if (this._pipeline.State == PipelineState.Running)
+        Debug.Assert(type.IsAssignableTo(typeof(Pipeline)));
+        if (this._pipelines.Any(p => p.Key == type))
         {
-            this.CancelPipeline();
+            State.Logger.LogTrace(LogType.PipelineController, $"Pipeline of type {type.Name} is already initialized, skipping addition.");
             return;
         }
 
-        this._cts = new CancellationTokenSource();
-        
-        if (this._pipeline.State is PipelineState.Cancelled or PipelineState.Error or PipelineState.Finished)
-        {
-            this._pipeline.Reset();
-        }
-        
-        Task.Run(async () =>
-        {
-            try
-            {
-                this.Platform.PrepareThread();
-                await this._pipeline.ExecuteAsync(this._cts?.Token ?? CancellationToken.None);
-            }
-            catch (Exception ex)
-            {
-                this.Platform.ErrorPrompt($"Unhandled error while running pipeline {this._pipeline.Name}: {ex}");
-            }
-            finally
-            {
-                this.Platform.PrepareStopThread();
-            }
-        }, this._cts?.Token ?? CancellationToken.None);
+        Pipeline pipeline = (Pipeline)Activator.CreateInstance(type, this)!;
+        pipeline.Initialize(this.Context);
+
+        this._pipelines.Add(type, pipeline);
     }
 
-    public void AutoDiscoverButtonClick(string url, Action<AutoDiscoverResponse> onSuccess)
+    public async Task ExecutePipeline(Type type)
     {
-        if (this._autoDiscoverCts != null)
+        Pipeline? pipeline = this._pipelines.GetValueOrDefault(type);
+        if (pipeline == null)
         {
-            this.CancelAutoDiscover();
+            this.Platform.ErrorPrompt($"Pipeline of type {type} was not defined, so we can't execute it!! Please report this as an issue!");
             return;
         }
 
-        this._autoDiscoverCts = new CancellationTokenSource();
-        
-        Task.Run(async () =>
-        {
-            try
-            {
-                AutoDiscoverResponse? autoDiscover =
-                    await this._pipeline.InvokeAutoDiscoverAsync(url, this._autoDiscoverCts.Token);
-
-                if (autoDiscover != null)
-                {
-                    this._autoDiscoverButtonText = $"AutoDiscover [Connected to {autoDiscover.ServerBrand}]";
-                    this._uiThread.Invoke(() => onSuccess.Invoke(autoDiscover));
-                }
-            }
-            catch (Exception ex)
-            {
-                State.Logger.LogError(LogType.Pipeline, $"Unhandled error while invoking autodiscover: {ex}");
-                SentrySdk.CaptureException(ex);
-            }
-            finally
-            {
-                this._autoDiscoverCts = null;
-            }
-        }, this._autoDiscoverCts.Token);
+        this.CurrentPipeline = pipeline;
+        await pipeline.ExecuteAsync();
     }
 }

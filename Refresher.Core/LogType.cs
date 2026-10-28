@@ -23,4 +23,5 @@ public enum LogType : byte
     Decrypt,
     Platform,
     RefresherForm,
+    PipelineController,
 }
