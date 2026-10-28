@@ -50,7 +50,7 @@ public abstract class PipelineController : IAccessesPlatform
     /// <summary>
     /// The pipelines managed by this controller. No hard-coded fields here to avoid duplicate execution code.
     /// </summary>
-    private Dictionary<Type, Pipeline> _pipelines { get; } = [];
+    private Dictionary<PipelineCategory, Pipeline> _pipelines { get; } = [];
 
     /// <summary>
     /// The current pipeline being executed (or the last one that was executed), for stuff like progress bars.
@@ -81,41 +81,41 @@ public abstract class PipelineController : IAccessesPlatform
         // Build a dictionary mapping type -> pipeline for both the main type and the additional types.
         // This way we don't need to duplicate execution code, and forms can easily either use hardcoded types,
         // or use the controller's public type properties.
-        this.AddPipeline(this.MainPipelineType);
-        this.AddPipeline(this.RevertPatchPipelineType);
-        this.AddPipeline(this.VerifyServerInputPipelineType);
-        this.AddPipeline(this.DownloadGameDataPipelineType);
+        this.AddPipeline(this.MainPipelineType, PipelineCategory.Main);
+        this.AddPipeline(this.RevertPatchPipelineType, PipelineCategory.RevertPatch);
+        this.AddPipeline(this.VerifyServerInputPipelineType, PipelineCategory.VerifyServerInput);
+        this.AddPipeline(this.DownloadGameDataPipelineType, PipelineCategory.DownloadGameData);
 
         // Set current pipeline to the main one by default.
-        Pipeline? defaultPipeline = this._pipelines.GetValueOrDefault(this.MainPipelineType);
+        Pipeline? defaultPipeline = this.GetPipeline(PipelineCategory.Main);
         Debug.Assert(defaultPipeline != null);
 
         this.CurrentPipeline = defaultPipeline!;
     }
 
-    private void AddPipeline(Type? type)
+    private void AddPipeline(Type? type, PipelineCategory category)
     {
         if (type == null) return;
 
         Debug.Assert(type.IsAssignableTo(typeof(Pipeline)));
-        if (this._pipelines.Any(p => p.Key == type))
+        if (this._pipelines.Any(p => p.Key == category))
         {
-            State.Logger.LogTrace(LogType.PipelineController, $"Pipeline of type {type.Name} is already initialized, skipping addition.");
+            State.Logger.LogTrace(LogType.PipelineController, $"Pipeline of category {category} is already initialized, skipping addition.");
             return;
         }
 
         Pipeline pipeline = (Pipeline)Activator.CreateInstance(type, this)!;
         pipeline.Initialize(this.Context);
 
-        this._pipelines.Add(type, pipeline);
+        this._pipelines.Add(category, pipeline);
     }
 
-    public async Task ExecutePipeline(Type type)
+    public async Task ExecutePipeline(PipelineCategory category)
     {
-        Pipeline? pipeline = this.GetPipeline(type);
+        Pipeline? pipeline = this.GetPipeline(category);
         if (pipeline == null)
         {
-            this.Platform.ErrorPrompt($"Pipeline of type {type} was not defined, so we can't execute it!! Please report this as an issue!");
+            this.Platform.ErrorPrompt($"Pipeline of category {category} was not defined, so we can't execute it! Please report this as an issue!");
             return;
         }
 
@@ -123,9 +123,8 @@ public abstract class PipelineController : IAccessesPlatform
         await pipeline.ExecuteAsync();
     }
 
-    public Pipeline? GetPipeline(Type? type)
+    public Pipeline? GetPipeline(PipelineCategory category)
     {
-        if (type == null) return null;
-        return this._pipelines.GetValueOrDefault(type);
+        return this._pipelines.GetValueOrDefault(category);
     }
 }
