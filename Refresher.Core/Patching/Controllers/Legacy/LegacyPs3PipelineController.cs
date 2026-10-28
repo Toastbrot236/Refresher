@@ -1,12 +1,9 @@
-
 using Refresher.Core.Patching.Pipelines.Common;
-using Refresher.Core.Patching.Pipelines.Lbp;
 using Refresher.Core.Patching.Pipelines.Legacy;
-using Refresher.Core.Platform;
 
 namespace Refresher.Core.Patching.Controllers.Legacy;
 
-public class LegacyPs3PipelineController(IPlatformInterface platform) : PipelineController(platform)
+public class LegacyPs3PipelineController() : PipelineController()
 {
     public override string Name => "Patch non-LBP game on PS3 (Legacy)";
     public override string ShorthandUrlId => "";
