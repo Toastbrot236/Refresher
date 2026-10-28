@@ -13,9 +13,6 @@ namespace Refresher.Core.Patching.Pipelines;
 public abstract class Pipeline : IAccessesPlatform
 {
     public abstract string Name { get; }
-    
-    public readonly Dictionary<string, string> Inputs = [];
-    public FrozenSet<StepInput> RequiredInputs { get; private set; } = null!;
 
     public IPlatformInterface Platform => this.Context.Platform;
     internal List<GameInformation>? GameList => this.Context.GameList;
@@ -120,28 +117,7 @@ public abstract class Pipeline : IAccessesPlatform
             throw new InvalidOperationException("Pipeline must be restarted before it can be executed again.");
         }
 
-        foreach (StepInput input in this.RequiredInputs)
-        {
-            if (!this.Inputs.TryGetValue(input.Id, out string? data))
-            {
-                this.State = PipelineState.Error;
-                throw new InvalidOperationException($"Input {input.Id} was not provided to the pipeline before execution.");
-            }
-
-            if (input.Required && string.IsNullOrWhiteSpace(data))
-            {
-                this.State = PipelineState.Error;
-                this.Platform.WarnPrompt($"Please fill out the required '{input.Name}' input before proceeding, as it is a required field.");
-                return;
-            }
-        }
-        
-        if(this.Inputs.Count != 0)
-            GlobalState.Logger.LogTrace(LogType.Pipeline, "Pipeline inputs:");
-        foreach ((string? key, string? value) in this.Inputs)
-        {
-            GlobalState.Logger.LogTrace(LogType.Pipeline, $"  '{key}' = '{value}'");
-        }
+        // Validation should be done by either the form or the pipeline steps (or both if you really want to).
 
         GlobalState.Logger.LogInfo(LogType.Pipeline, $"Pipeline {this.GetType().Name} started.");
         this.State = PipelineState.Running;
@@ -153,15 +129,10 @@ public abstract class Pipeline : IAccessesPlatform
             GlobalState.Logger.LogInfo(LogType.Pipeline, $"Pipeline {this.GetType().Name} finished!");
             this.State = PipelineState.Finished;
         
-            PreviousInputStorage.ApplyFromPipeline(this);
-            PreviousInputStorage.Write();
+            PreviousInputStorage.Write(this.Context.UserEntered);
 
-            if (!this.Inputs.TryGetValue("url", out string? url))
-            {
-                this.Platform.InfoPrompt("Patch successful!");
-                return;
-            }
-            
+            // TODO don't show this if the server doesn't specify a registration page URL via AutoDiscover v4
+            // TODO allow user to set this prompt to not show at all
             QuestionResult result = this.Platform.Ask(
                 "Patch successful!\r\n\r\n" +
                         "Some servers like Bonsai require registering an account to play. " +
@@ -188,6 +159,11 @@ public abstract class Pipeline : IAccessesPlatform
                     this.Platform.WarnPrompt("Sorry, we couldn't open the URL. You can usually reach it by using the same link as the one you gave to Refresher.");
                 }
             }
+        }
+        else
+        {
+            GlobalState.Logger.LogInfo(LogType.Pipeline, $"Pipeline {this} failed!");
+            this.State = PipelineState.Error;
         }
     }
 
