@@ -11,14 +11,12 @@ public class ValidateGameStep : Step
     public override string Name { get; } = "Validating your entered game data";
     public override float Progress { get; protected set; }
 
-    public override List<StepInput> Inputs { get; } =
-    [
-        CommonStepInputs.TitleId,
-    ];
-
     public override Task ExecuteAsync(CancellationToken cancellationToken = default)
     {
-        string titleId = CommonStepInputs.TitleId.GetValueFromPipeline(this.Pipeline).Trim();
+        string? titleId = this.UserInputs.TitleID?.Trim();
+        if (titleId == null)
+            return this.Fail("No game was selected!");
+
         string gamePath = $"game/{titleId}";
 
         // sanity check. UI will not allow this to happen, but CLI will

@@ -11,7 +11,7 @@ public class PipelineContext
     /// <summary>
     /// Platform specific stuff for GUI operations, like showing prompts. Set by PipelineController.
     /// </summary>
-    public IPlatformInterface Platform { get; init; } = null!;
+    public IPlatformInterface Platform { get; set; } = null!;
 
     /// <summary>
     /// List of game data downloaded by a pipeline using a platform accessor. Null = not downloaded yet;
@@ -28,10 +28,10 @@ public class PipelineContext
     /// Everything the user has entered via the GUI. Initialized by the PipelineController by either
     /// loading from file, or creating a new object.
     /// </summary>
-    public UserEnteredInputs UserEntered { get; set; }
+    public UserEnteredInputs UserInputs { get; set; } = null!;
 
     /// <summary>
-    /// Allow GUI controller to specify whitelisted words in game names if wanted.
+    /// Allow GUI controller to specify whitelisted words in game names if wanted. Empty = Don't do any filtering
     /// </summary>
     // TODO also allow blacklisting using a separate array
     public string[] GameNameWhitelist { get; set; } = [];
@@ -40,5 +40,5 @@ public class PipelineContext
     /// Prefers the URL from AutoDiscover, but will fall back to the user-entered one.
     /// </summary>
     public string GetServerUrl()
-        => this.AutoDiscover?.Url ?? this.UserEntered!.EnteredServerUrl ?? "";
+        => this.AutoDiscover?.Url ?? this.UserInputs.EnteredServerUrl ?? "";
 }

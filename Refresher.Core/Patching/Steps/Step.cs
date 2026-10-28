@@ -10,12 +10,12 @@ public abstract class Step : IAccessesPlatform
     protected Pipeline Pipeline { get; }
     public abstract float Progress { get; protected set; }
 
-    public virtual List<StepInput> Inputs { get; } = [];
     public abstract string Name { get; }
 
     protected GameInformation Game => this.Pipeline.GameInformation!;
     protected EncryptionDetails Encryption => this.Pipeline.EncryptionDetails!;
     protected AutoDiscoverResponse? AutoDiscover => this.Pipeline.AutoDiscover;
+    protected UserEnteredInputs UserInputs => this.Pipeline.Context.UserInputs;
 
     protected Step(Pipeline pipeline)
     {

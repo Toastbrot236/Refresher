@@ -8,12 +8,6 @@ public class UploadPatchworkConfigurationStep : Step
 {
     public UploadPatchworkConfigurationStep(Pipeline pipeline) : base(pipeline)
     {}
-    
-    public override List<StepInput> Inputs =>
-    [
-        CommonStepInputs.ServerUrl,
-        CommonStepInputs.LobbyPassword,
-    ];
 
     public override string Name { get; } = "Uploading Patchwork config files";
     public override float Progress { get; protected set; }
@@ -22,14 +16,14 @@ public class UploadPatchworkConfigurationStep : Step
         this.Pipeline.Accessor!.CreateDirectoryIfNotExists("plugins/");
         this.Pipeline.Accessor!.CreateDirectoryIfNotExists("plugins/patchwork/");
         
-        string? lobbyPassword = this.Pipeline.Inputs["lobby-password"];
+        string? lobbyPassword = this.UserInputs.EnteredJoinKey;
         if (string.IsNullOrWhiteSpace(lobbyPassword))
             lobbyPassword = null;
         
         await this.UploadConfigValue("patchwork_lobby_password.txt", lobbyPassword, ct);
         this.Progress = 0.33f;
         
-        await this.UploadConfigValue("patchwork_url.txt", this.Pipeline.Inputs["url"], ct);
+        await this.UploadConfigValue("patchwork_url.txt", this.Pipeline.Context.GetServerUrl(), ct);
         this.Progress = 0.66f;
         
         string? customDigest = this.Pipeline.AutoDiscover?.UsesCustomDigestKey ?? false

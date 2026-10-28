@@ -65,8 +65,8 @@ public class DownloadGameListStep : Step
             
             this.Progress = i++ / (float)games.Count;
 
-            List<string> filters = this.Pipeline.GameNameFilters.ToList();
-            if(filters.Count <= 0 || filters.Any(f => game.Name?.Contains(f, StringComparison.InvariantCultureIgnoreCase) ?? false))
+            string[] filters = this.Pipeline.GameNameWhitelist;
+            if(filters.Length <= 0 || filters.Any(f => game.Name?.Contains(f, StringComparison.InvariantCultureIgnoreCase) ?? false))
                 this.Pipeline.GameList.Add(game);
         }
 

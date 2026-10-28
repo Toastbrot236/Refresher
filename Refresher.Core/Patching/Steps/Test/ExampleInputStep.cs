@@ -12,11 +12,6 @@ public class ExampleInputStep : Step
     public override string Name { get; } = "Example input";
     public override float Progress { get; protected set; }
 
-    public override List<StepInput> Inputs { get; } =
-    [
-        new("example-input", "Input"),
-    ];
-
     public override Task ExecuteAsync(CancellationToken cancellationToken = default)
     {
         this.Platform.InfoPrompt("Info");
@@ -25,7 +20,6 @@ public class ExampleInputStep : Step
         QuestionResult result = this.Platform.Ask("Question");
         this.Platform.InfoPrompt(result.ToString());
         
-        State.Logger.LogInfo(LogType.Pipeline, $"Input was set to '{this.Inputs[0].GetValueFromPipeline(this.Pipeline)}'");
         return Task.CompletedTask;
     }
 }

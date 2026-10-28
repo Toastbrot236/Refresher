@@ -15,7 +15,7 @@ public class ExecuteAutoDiscoverStep : Step
     public override float Progress { get; protected set; }
     public override Task ExecuteAsync(CancellationToken cancellationToken = default)
     {
-        string? enteredUrl = this.UserEntered.EnteredServerUrl;
+        string? enteredUrl = this.UserInputs.EnteredServerUrl;
         if (string.IsNullOrWhiteSpace(enteredUrl))
             return this.Fail("Can't use AutoDiscover if no server URL was given!");
 

@@ -14,10 +14,23 @@ public abstract class Pipeline : IAccessesPlatform
 {
     public abstract string Name { get; }
 
-    public IPlatformInterface Platform => this.Context.Platform;
-    internal List<GameInformation>? GameList => this.Context.GameList;
-    public AutoDiscoverResponse? AutoDiscover => this.Context.AutoDiscover;
-    public IEnumerable<string> GameNameWhitelist => this.Context.GameNameWhitelist;
+    public IPlatformInterface Platform { 
+        get => this.Context.Platform;
+        set => this.Context.Platform = value;
+    }
+    internal List<GameInformation>? GameList { 
+        get => this.Context.GameList;
+        set => this.Context.GameList = value;
+    }
+    public AutoDiscoverResponse? AutoDiscover { 
+        get => this.Context.AutoDiscover;
+        set => this.Context.AutoDiscover = value;
+    }
+    public string[] GameNameWhitelist { 
+        get => this.Context.GameNameWhitelist;
+        set => this.Context.GameNameWhitelist = value;
+    }
+
     /// <summary>
     /// Initialized by PipelineController. Some info gets set by the controller (e.g. game name lists, user-entered inputs),
     /// some gets set by its (other) pipelines (e.g. game list, AutoDiscover)
@@ -64,27 +77,21 @@ public abstract class Pipeline : IAccessesPlatform
     private byte _currentStepIndex;
     private Step? _currentStep;
 
-    public void Initialize(IPlatformInterface platform)
+    public void Initialize(PipelineContext context)
     {
-        this.Platform = platform;
-
-        List<StepInput> requiredInputs = [];
+        this.Context = context;
         
         this._steps = new List<Step>(this.StepTypes.Count + 1);
         
         if(this.SetupAccessorStepType != null)
-            this.AddStep(requiredInputs, this.SetupAccessorStepType);
+            this.AddStep(this.SetupAccessorStepType);
 
         foreach (Type type in this.StepTypes)
-            this.AddStep(requiredInputs, type);
-        
-        this.RequiredInputs = requiredInputs.DistinctBy(i => i.Id).ToFrozenSet();
+            this.AddStep(type);
     }
 
     public void Reset()
     {
-        this.Inputs.Clear();
-
         this.State = PipelineState.NotStarted;
 
         this._stepCount = 0;
@@ -99,14 +106,13 @@ public abstract class Pipeline : IAccessesPlatform
         this.EncryptionDetails = null;
     }
 
-    private void AddStep(List<StepInput> requiredInputs, Type type)
+    private void AddStep(Type type)
     {
         Debug.Assert(type.IsAssignableTo(typeof(Step)));
 
         Step step = (Step)Activator.CreateInstance(type, this)!;
 
         this._steps.Add(step);
-        requiredInputs.AddRange(step.Inputs);
     }
 
     public async Task ExecuteAsync(CancellationToken cancellationToken = default)
@@ -129,7 +135,7 @@ public abstract class Pipeline : IAccessesPlatform
             GlobalState.Logger.LogInfo(LogType.Pipeline, $"Pipeline {this.GetType().Name} finished!");
             this.State = PipelineState.Finished;
         
-            PreviousInputStorage.Write(this.Context.UserEntered);
+            PreviousInputStorage.Write(this.Context.UserInputs);
 
             // TODO don't show this if the server doesn't specify a registration page URL via AutoDiscover v4
             // TODO allow user to set this prompt to not show at all
@@ -142,7 +148,7 @@ public abstract class Pipeline : IAccessesPlatform
             {
                 try
                 {
-                    Uri oldUri = new(url);
+                    Uri oldUri = new(this.Context.GetServerUrl());
                     UriBuilder builder = new()
                     {
                         Host = oldUri.Host,
