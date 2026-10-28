@@ -1,7 +1,7 @@
 using Refresher.Core.Platform;
 using Refresher.Core.Verification.AutoDiscover;
 
-namespace Refresher.Core.Patching.Pipelines;
+namespace Refresher.Core.Patching.Controllers;
 
 /// <summary>
 /// A set of common utilities to assist in controlling a pipeline from a UI.
