@@ -77,6 +77,20 @@ public abstract class Pipeline : IAccessesPlatform
     private byte _currentStepIndex;
     private Step? _currentStep;
 
+    public virtual string GetStateText()
+    {
+        return this.State switch
+        {
+            // Most pipelines are patch pipelines, so default to terms related to patching
+            PipelineState.NotStarted => "Patch!",
+            PipelineState.Running => "Patching... (click to cancel)",
+            PipelineState.Finished => "Finished! (click to patch again)",
+            PipelineState.Cancelled => "Patch!",
+            PipelineState.Error => "Retry (Patch failed)",
+            _ => "Patch!",
+        };
+    }
+
     public void Initialize(PipelineContext context)
     {
         this.Context = context;

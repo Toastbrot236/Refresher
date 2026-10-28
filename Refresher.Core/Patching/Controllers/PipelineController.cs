@@ -22,7 +22,8 @@ public abstract class PipelineController : IAccessesPlatform
     public virtual string ShorthandUrlId { get; } = "";
     public string GuideLink => $"https://docs.littlebigrefresh.com/{this.ShorthandUrlId}";
 
-    public bool RequiresJoinKey { get; protected init; }
+    // This is only here for compatibility, may or may not get removed soon.
+    public bool UsesPatchwork { get; protected init; }
 
     /// <summary>
     /// Used by the constructor to know what pipeline to default to as the current one.
@@ -61,6 +62,7 @@ public abstract class PipelineController : IAccessesPlatform
     /// </summary>
     public PipelineContext Context { get; protected init; }
     public IPlatformInterface Platform => this.Context.Platform;
+    public bool EnableFormControls => this.CurrentPipeline.State != PipelineState.Running;
 
     public PipelineController(IPlatformInterface platform) // TODO blacklist
     {
@@ -105,7 +107,7 @@ public abstract class PipelineController : IAccessesPlatform
 
     public async Task ExecutePipeline(Type type)
     {
-        Pipeline? pipeline = this._pipelines.GetValueOrDefault(type);
+        Pipeline? pipeline = this.GetPipeline(type);
         if (pipeline == null)
         {
             this.Platform.ErrorPrompt($"Pipeline of type {type} was not defined, so we can't execute it!! Please report this as an issue!");
@@ -114,5 +116,10 @@ public abstract class PipelineController : IAccessesPlatform
 
         this.CurrentPipeline = pipeline;
         await pipeline.ExecuteAsync();
+    }
+
+    public Pipeline? GetPipeline(Type type)
+    {
+        return this._pipelines.GetValueOrDefault(type);
     }
 }

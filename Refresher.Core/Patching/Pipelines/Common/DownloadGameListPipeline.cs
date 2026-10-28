@@ -19,4 +19,18 @@ public class DownloadGameListPipeline : Pipeline
     {
         this.SetupAccessorStepType = setupAccessorStepType;
     }
+
+    public override string GetStateText()
+    {
+        return this.State switch
+        {
+            // Most pipelines are patch pipelines, so default to terms related to patching
+            PipelineState.NotStarted => "Download game data",
+            PipelineState.Running => "Downloading game data... (click to cancel)",
+            PipelineState.Finished => $"Game data download finished",
+            PipelineState.Cancelled => "Download game data",
+            PipelineState.Error => "Retry (Game data download failed)",
+            _ => "Download game data",
+        };
+    }
 }
