@@ -1,8 +1,3 @@
-using System.Diagnostics;
-using Refresher.Core.Patching.Pipelines;
-using Refresher.Core.Platform;
-using Refresher.Core.Storage;
-
 namespace Refresher.Core.Patching.Controllers;
 
 /// <summary>
