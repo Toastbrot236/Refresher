@@ -1,17 +1,14 @@
 using System.Diagnostics;
-using System.Runtime.InteropServices;
 using System.Text;
 using Eto;
 using Eto.Drawing;
 using Eto.Forms;
 using NotEnoughLogs;
 using Refresher.Core;
-using Refresher.Core.Accessors;
 using Refresher.Core.Logging;
 using Refresher.Core.Patching;
 using Refresher.Core.Patching.Controllers;
 using Refresher.Core.Patching.Pipelines;
-using Refresher.Core.Patching.Steps;
 using Refresher.Core.Platform;
 using Refresher.Core.Storage;
 using Refresher.Extensions;
@@ -22,7 +19,6 @@ namespace Refresher.UI;
 public class PipelineForm<TPipelineController> : RefresherForm, IAccessesPlatform where TPipelineController : PipelineController, new()
 {
     private TPipelineController? _controller;
-    private Pipeline? _mainPipeline;
 
     private readonly Button _button;
     private readonly Button? _revertButton;
@@ -41,11 +37,6 @@ public class PipelineForm<TPipelineController> : RefresherForm, IAccessesPlatfor
     
     private bool _usedAutoDiscover = false;
     private bool _connected = false;
-
-    private Type _mainPipelineType { get; init; }
-    private Type? _revertPatchPipelineType { get; init; }
-    private Type? _verifyServerInputPipelineType { get; init; }
-    private Type? _downloadGameDataPipelineType { get; init; }
 
     public PipelineForm() : this(null)
     {
@@ -161,21 +152,16 @@ public class PipelineForm<TPipelineController> : RefresherForm, IAccessesPlatfor
         {
             // TODO ability to manually unlock AutoDiscover
             this._autoDiscoverButton.Enabled = enableControls && this._controller?.Context.AutoDiscover == null;
+            this._autoDiscoverButton.Text = this._controller?.GetPipelineStateText(PipelineCategory.VerifyServerInput);
         }
             
         if(this._revertButton != null)
         {
             this._revertButton.Enabled = enableControls;
+            this._revertButton.Text = this._controller?.GetPipelineStateText(PipelineCategory.RevertPatch);
         }
 
-        // set text of autodiscover button
-        if (this._autoDiscoverButton != null)
-        {
-            this._autoDiscoverButton.Text = this._controller?.GetPipeline(this._controller?.VerifyServerInputPipelineType)?.GetStateText()
-        }
-            
-
-        this._button.Text = this._controller.MainButtonText;
+        this._button.Text = this._controller?.GetPipelineStateText(PipelineCategory.Main);
     }
 
     private bool _shouldTriggerOnConnect = false;
@@ -184,7 +170,6 @@ public class PipelineForm<TPipelineController> : RefresherForm, IAccessesPlatfor
     {
         this._controller = new TPipelineController();
         this._controller.Initialize(this.Platform);
-        this._mainPipelineType = this._controller.MainPipelineType;
         
         PreviousInputStorage.Read();
         this._formLayout.Rows.Clear();

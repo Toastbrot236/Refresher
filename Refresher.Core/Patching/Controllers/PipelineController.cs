@@ -127,4 +127,9 @@ public abstract class PipelineController : IAccessesPlatform
     {
         return this._pipelines.GetValueOrDefault(category);
     }
+
+    public string GetPipelineStateText(PipelineCategory category)
+    {
+        return this.GetPipeline(category)?.GetStateText() ?? "Pipeline not found, lol";
+    }
 }
