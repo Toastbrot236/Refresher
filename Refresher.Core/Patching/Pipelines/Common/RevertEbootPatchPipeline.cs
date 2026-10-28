@@ -26,7 +26,6 @@ public class RevertEbootPatchPipeline : Pipeline
     {
         return this.State switch
         {
-            // Most pipelines are patch pipelines, so default to terms related to patching
             PipelineState.NotStarted => "Revert Patch",
             PipelineState.Running => "Reverting Patch... (click to cancel)",
             PipelineState.Finished => $"Patch was reverted!",

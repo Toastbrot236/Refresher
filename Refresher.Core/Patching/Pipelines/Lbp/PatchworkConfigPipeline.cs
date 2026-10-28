@@ -22,7 +22,6 @@ public abstract class PatchworkConfigPipeline : Pipeline
     {
         return this.State switch
         {
-            // Most pipelines are patch pipelines, so default to terms related to patching
             PipelineState.NotStarted => "Apply changes!",
             PipelineState.Running => "Applying changes... (click to cancel)",
             PipelineState.Finished => $"Changes applied! (click to re-apply)",
