@@ -9,8 +9,6 @@ public class RPCS3PatchPipeline : Pipeline
     public override string Name => "RPCS3 Patch (any game)";
 
     protected override Type SetupAccessorStepType => typeof(SetupEmulatorAccessorStep);
-    
-    public override string GuideLink => "https://docs.littlebigrefresh.com/rpcs3";
 
     protected override List<Type> StepTypes =>
     [

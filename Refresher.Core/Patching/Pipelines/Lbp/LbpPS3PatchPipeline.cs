@@ -8,12 +8,6 @@ public class LbpPS3PatchPipeline : Pipeline
     public override string Name => "LBP PS3 Patch";
 
     protected override Type SetupAccessorStepType => typeof(SetupPS3AccessorStep);
-    public override bool ReplacesEboot => true;
-
-    public override string GuideLink => "https://docs.littlebigrefresh.com/ps3";
-    public override string? ShorthandUrlId => "ps3";
-
-    public override IEnumerable<string> GameNameFilters => ["littlebigplanet", "lbp", "リトルビッグプラネット", "리틀 빅 플래닛"];
 
     protected override List<Type> StepTypes =>
     [

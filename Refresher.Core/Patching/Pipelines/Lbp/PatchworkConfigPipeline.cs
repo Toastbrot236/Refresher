@@ -4,11 +4,7 @@ namespace Refresher.Core.Patching.Pipelines.Lbp;
 
 public abstract class PatchworkConfigPipeline : Pipeline
 {
-    public override string Name => $"Patchwork {this.ConsoleName} Config";
-
-    public override string? ShorthandUrlId => this.ConsoleName.ToLower();
-
-    protected abstract string ConsoleName { get; }
+    public override string Name => $"Reconfigure Patchwork";
 
     protected abstract override Type? SetupAccessorStepType { get; }
 

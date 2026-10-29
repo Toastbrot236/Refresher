@@ -3,17 +3,10 @@ using Refresher.Core.Patching.Steps.RPCS3;
 
 namespace Refresher.Core.Patching.Pipelines.Lbp;
 
+// TODO this pipeline will be removed when we rework LBP RPCS3 patching.
 public class LbpRPCS3PatchPipeline : Pipeline
 {
     public override string Name => "LBP RPCS3 Patch";
-
-    protected override Type SetupAccessorStepType => typeof(SetupEmulatorAccessorStep);
-    public override bool ReplacesEboot => true;
-
-    public override string GuideLink => "https://docs.littlebigrefresh.com/rpcs3";
-    public override string? ShorthandUrlId => "rpcs3";
-
-    public override IEnumerable<string> GameNameFilters => ["littlebigplanet", "lbp", "リトルビッグプラネット", "리틀 빅 플래닛"];
 
     protected override List<Type> StepTypes =>
     [

@@ -45,9 +45,6 @@ public abstract class Pipeline : IAccessesPlatform
     public GameInformation? GameInformation { get; set; }
     public EncryptionDetails? EncryptionDetails { get; set; }
 
-    public virtual string? GuideLink => null;
-    public virtual string? ShorthandUrlId => null;
-
     public PipelineState State { get; private set; } = PipelineState.NotStarted;
     
     public float Progress
