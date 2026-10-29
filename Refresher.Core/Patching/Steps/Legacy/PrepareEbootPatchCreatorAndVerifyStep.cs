@@ -9,21 +9,25 @@ public class PrepareEbootPatchCreatorAndVerifyStep : Step
     public PrepareEbootPatchCreatorAndVerifyStep(Pipeline pipeline) : base(pipeline)
     {}
 
-    public override List<StepInput> Inputs =>
-    [
-        CommonStepInputs.RPCS3Folder,
-        CommonStepInputs.ServerUrl,
-    ];
-
     public override string Name { get; } = "Preparing RPCS3 patch creator";
     public override float Progress { get; protected set; }
     public override Task ExecuteAsync(CancellationToken cancellationToken = default)
     {
-        string url = this.Pipeline.Inputs["url"];
+        string? url = this.Pipeline.Context?.GetServerUrl();
+        string? devHdd0Path = this.UserInputs?.OutputElfPath;
+        if (string.IsNullOrWhiteSpace(devHdd0Path))
+        {
+            return this.Fail("RPCS3 dev_hdd0 folder path was not specified! Cancelling operation.");
+        }
+        if (string.IsNullOrWhiteSpace(url))
+        {
+            return this.Fail("Server URL was not specified! Cancelling operation.");
+        }
 
         EbootPatcher patcher = new(File.Open(this.Game.DecryptedEbootPath!, FileMode.Open, FileAccess.ReadWrite));
         patcher.GenerateRpcs3Patch = true;
-        patcher.Rpcs3PatchFolder = Path.GetFullPath(Path.Combine(this.Pipeline.Inputs["hdd0-path"], "..", "patches"));
+
+        patcher.Rpcs3PatchFolder = Path.GetFullPath(Path.Combine(devHdd0Path, "..", "patches")); // lol
         patcher.TitleId = this.Game.TitleId;
         patcher.GameName = this.Game.Name;
         patcher.GameVersion = this.Game.Version;
