@@ -6,5 +6,4 @@ namespace Refresher.Core.Patching.Pipelines.Lbp;
 public class PatchworkRPCS3ConfigPipeline : PatchworkConfigPipeline
 {
     public override string Name => $"Reconfigure Patchwork on RPCS3";
-    protected override Type? SetupAccessorStepType => typeof(SetupEmulatorAccessorStep);
 }

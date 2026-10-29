@@ -5,5 +5,4 @@ namespace Refresher.Core.Patching.Pipelines.Lbp;
 public class PatchworkPS3ConfigPipeline : PatchworkConfigPipeline
 {
     public override string Name => $"Reconfigure Patchwork on PS3";
-    protected override Type SetupAccessorStepType => typeof(SetupPS3AccessorStep);
 }

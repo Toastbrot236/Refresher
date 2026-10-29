@@ -5,20 +5,16 @@ namespace Refresher.Core.Patching.Pipelines.Common;
 public class DownloadGameListPipeline : Pipeline
 {
     public override string Name => "Downloading your Game list";
-
-    public override bool ReplacesEboot => true;
+    public override bool NeedsAccessor => true;
 
     protected override List<Type> StepTypes =>
     [
         typeof(DownloadGameListStep),
+        // Might want to probably execute more steps here in the future
+        // (e.g. download patchwork config before/after game list so the user could choose whether to 
+        // fill in options from there instead of our local inputs.ini), so having this be in its own pipelines
+        // might get more usecases than just simplicity soon.
     ];
-
-    protected override Type? SetupAccessorStepType { get; }
-
-    public DownloadGameListPipeline(Type setupAccessorStepType)
-    {
-        this.SetupAccessorStepType = setupAccessorStepType;
-    }
 
     public override string GetStateText()
     {

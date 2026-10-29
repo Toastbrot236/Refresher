@@ -4,7 +4,7 @@ namespace Refresher.Core.Patching.Pipelines.Legacy;
 
 public class ElfToElfPatchPipeline : Pipeline
 {
-    public override string Name => ".elf->.elf Patch";
+    public override string Name => "Patching .elf file";
     
     protected override List<Type> StepTypes =>
     [

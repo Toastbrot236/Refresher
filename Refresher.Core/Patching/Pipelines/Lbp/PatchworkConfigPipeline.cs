@@ -5,8 +5,7 @@ namespace Refresher.Core.Patching.Pipelines.Lbp;
 public abstract class PatchworkConfigPipeline : Pipeline
 {
     public override string Name => $"Reconfigure Patchwork";
-
-    protected abstract override Type? SetupAccessorStepType { get; }
+    public override bool NeedsAccessor => true;
 
     protected override List<Type> StepTypes =>
     [

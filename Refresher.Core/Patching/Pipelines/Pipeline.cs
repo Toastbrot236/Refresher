@@ -12,6 +12,10 @@ namespace Refresher.Core.Patching.Pipelines;
 
 public abstract class Pipeline : IAccessesPlatform
 {
+    /// <summary>
+    /// These are no longer used for window title bars (we use PipelineController.Name for that now),
+    /// so these names are now only used to quickly summarize what the pipeline actually does (e.g. "Patch game on PS3", or "Revert Eboot patch").
+    /// </summary>
     public abstract string Name { get; }
 
     public IPlatformInterface Platform { 
@@ -64,8 +68,7 @@ public abstract class Pipeline : IAccessesPlatform
 
     public float CurrentProgress => this.State == PipelineState.Finished ? 1 : this._currentStep?.Progress ?? 0;
 
-    protected virtual Type? SetupAccessorStepType => null;
-    public virtual bool ReplacesEboot => false;
+    public virtual bool NeedsAccessor => false;
 
     protected abstract List<Type> StepTypes { get; }
     private List<Step> _steps = [];
@@ -88,17 +91,37 @@ public abstract class Pipeline : IAccessesPlatform
         };
     }
 
+    // From now on, PipelineController will use NeedsAccessor to determine whether to add an accessor setup type.
     public void Initialize(PipelineContext context)
     {
         this.Context = context;
-        
         this._steps = new List<Step>(this.StepTypes.Count + 1);
-        
-        if(this.SetupAccessorStepType != null)
-            this.AddStep(this.SetupAccessorStepType);
+
+        if (this.TargetPlatform != TargetPlatform.None && pipeline.NeedsAccessor)
+        {
+            Type? setupAccessorType = this.TargetPlatform switch
+            {
+                TargetPlatform.PS3 => typeof(SetupPS3AccessorStep),
+                TargetPlatform.RPCS3 => typeof(SetupEmulatorAccessorStep),
+                _ => null
+            };
+            
+            if (setupAccessorType == null)
+            {
+                State.Logger.LogWarning(LogType.Pipeline, $"Target platform {this.TargetPlatform} has no corresponding accessor, so pipeline {pipeline} will not work! Please report this issue!");
+            }
+            else
+            {
+                State.Logger.LogDebug(LogType.Pipeline, $"Adding {setupAccessorType} as accessor setup step for target platform {context.TargetPlatform}, pipeline {this}.");
+                this.AddStep(setupAccessorStepType);
+            }
+        }
 
         foreach (Type type in this.StepTypes)
+        {
+            State.Logger.LogDebug(LogType.Pipeline, $"Adding regular step {type} to pipeline {this}.");
             this.AddStep(type);
+        }
     }
 
     public void Reset()

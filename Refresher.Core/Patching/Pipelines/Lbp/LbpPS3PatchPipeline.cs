@@ -6,8 +6,7 @@ namespace Refresher.Core.Patching.Pipelines.Lbp;
 public class LbpPS3PatchPipeline : Pipeline
 {
     public override string Name => "LBP PS3 Patch";
-
-    protected override Type SetupAccessorStepType => typeof(SetupPS3AccessorStep);
+    public override bool NeedsAccessor => true;
 
     protected override List<Type> StepTypes =>
     [

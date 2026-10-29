@@ -8,6 +8,9 @@ public class LegacyRpcs3PipelineController() : PipelineController()
     public override string Name => "Patch non-LBP game on RPCS3 (Legacy)";
     public override string ShorthandUrlId => "";
 
+    public virtual bool UsesPatchwork => false;
+    public abstract TargetPlatform TargetPlatform => TargetPlatform.RPCS3;
+
     // This one doesn't have any revert pipeline
     public override Type MainPipelineType => typeof(RPCS3PatchPipeline);
     public override Type VerifyServerInputPipelineType => typeof(AutoDiscoverPipeline);

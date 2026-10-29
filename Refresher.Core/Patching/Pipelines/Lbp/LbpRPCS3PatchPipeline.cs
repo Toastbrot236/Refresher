@@ -7,6 +7,7 @@ namespace Refresher.Core.Patching.Pipelines.Lbp;
 public class LbpRPCS3PatchPipeline : Pipeline
 {
     public override string Name => "LBP RPCS3 Patch";
+    public override bool NeedsAccessor => true;
 
     protected override List<Type> StepTypes =>
     [

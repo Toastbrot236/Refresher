@@ -6,7 +6,7 @@ namespace Refresher.Core.Patching.Pipelines.Legacy;
 
 public class PS3PatchPipeline : Pipeline
 {
-    public override string Name => "PS3 Patch (any game)";
+    public override string Name => "Patch non-LBP game on PS3";
 
     protected override Type SetupAccessorStepType => typeof(SetupPS3AccessorStep);
 
