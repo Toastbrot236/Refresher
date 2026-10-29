@@ -249,4 +249,9 @@ public abstract class Pipeline : IAccessesPlatform
         this.Platform.ErrorPrompt($"{step?.GetType().Name ?? "Pipeline"} failed: {reason}\n\nPatching cannot continue.");
         this.State = PipelineState.Error;
     }
+
+    public override string ToString()
+    {
+        return $"'{this.Name}' ({this.GetType().Name})";
+    }
 }

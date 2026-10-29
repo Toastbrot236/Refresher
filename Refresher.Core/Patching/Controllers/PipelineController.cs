@@ -153,4 +153,9 @@ public abstract class PipelineController : IAccessesPlatform
     {
         return this.GetPipeline(category)?.GetStateText() ?? "Pipeline not found, lol";
     }
+
+    public override string ToString()
+    {
+        return $"'{this.Name}' ({this.GetType().Name})";
+    }
 }

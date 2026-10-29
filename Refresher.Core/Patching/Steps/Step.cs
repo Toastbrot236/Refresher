@@ -34,4 +34,9 @@ public abstract class Step : IAccessesPlatform
         this.Pipeline.Fail(this, reason);
         return Task.CompletedTask;
     }
+
+    public override string ToString()
+    {
+        return $"'{this.Name}' ({this.GetType().Name})";
+    }
 }
