@@ -2,6 +2,9 @@ using System.Collections.Frozen;
 using System.Diagnostics;
 using Refresher.Core.Accessors;
 using Refresher.Core.Patching.Steps;
+using Refresher.Core.Patching.Steps.PS3;
+using Refresher.Core.Patching.Steps.RPCS3;
+using Refresher.Core.Patching.Controllers;
 using Refresher.Core.Patching.Steps.Common;
 using Refresher.Core.Platform;
 using Refresher.Core.Storage;
@@ -96,9 +99,10 @@ public abstract class Pipeline : IAccessesPlatform
         this.Context = context;
         this._steps = new List<Step>(this.StepTypes.Count + 1);
 
-        if (this.TargetPlatform != TargetPlatform.None && pipeline.NeedsAccessor)
+        if (context.TargetPlatform != TargetPlatform.None && this.NeedsAccessor)
         {
-            Type? setupAccessorType = this.TargetPlatform switch
+            // TODO maybe move this to a helper method?
+            Type? setupAccessorType = context.TargetPlatform switch
             {
                 TargetPlatform.PS3 => typeof(SetupPS3AccessorStep),
                 TargetPlatform.RPCS3 => typeof(SetupEmulatorAccessorStep),
@@ -107,12 +111,12 @@ public abstract class Pipeline : IAccessesPlatform
             
             if (setupAccessorType == null)
             {
-                RefresherState.Logger.LogWarning(LogType.Pipeline, $"Target platform {this.TargetPlatform} has no corresponding accessor, so pipeline {pipeline} will not work! Please report this issue!");
+                RefresherState.Logger.LogWarning(LogType.Pipeline, $"Target platform {context.TargetPlatform} has no corresponding accessor, so pipeline {this} will not work! Please report this issue!");
             }
             else
             {
                 RefresherState.Logger.LogDebug(LogType.Pipeline, $"Adding {setupAccessorType} as accessor setup step for target platform {context.TargetPlatform}, pipeline {this}.");
-                this.AddStep(setupAccessorStepType);
+                this.AddStep(setupAccessorType);
             }
         }
 
