@@ -8,8 +8,8 @@ public class LbpRpcs3PatchPipelineController() : PipelineController()
     public override string Name => "Patch unpatched LBP1/2/3 on RPCS3";
     public override string ShorthandUrlId => "rpcs3";
 
-    public virtual bool UsesPatchwork => true;
-    public abstract TargetPlatform TargetPlatform => TargetPlatform.RPCS3;
+    public override bool UsesPatchwork => true;
+    public override TargetPlatform TargetPlatform => TargetPlatform.RPCS3;
 
     public override Type MainPipelineType => typeof(LbpRPCS3PatchPipeline);
     public override Type RevertPatchPipelineType => typeof(RevertEbootPatchPipeline);

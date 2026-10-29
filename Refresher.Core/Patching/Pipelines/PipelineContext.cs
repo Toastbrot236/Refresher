@@ -1,5 +1,6 @@
 using Refresher.Core.Platform;
 using Refresher.Core.Verification.AutoDiscover;
+using Refresher.Core.Patching.Controllers;
 
 namespace Refresher.Core.Patching.Pipelines;
 

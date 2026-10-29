@@ -7,8 +7,7 @@ namespace Refresher.Core.Patching.Pipelines.Legacy;
 public class RPCS3PatchPipeline : Pipeline
 {
     public override string Name => "Create RPCS3 patch for non-LBP game";
-
-    protected override Type SetupAccessorStepType => typeof(SetupEmulatorAccessorStep);
+    public override bool NeedsAccessor => true;
 
     protected override List<Type> StepTypes =>
     [

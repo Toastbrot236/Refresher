@@ -8,8 +8,8 @@ public class LegacyPs3PipelineController() : PipelineController()
     public override string Name => "Patch non-LBP game on PS3 (Legacy)";
     public override string ShorthandUrlId => "";
 
-    public virtual bool UsesPatchwork => false;
-    public abstract TargetPlatform TargetPlatform => TargetPlatform.PS3;
+    public override bool UsesPatchwork => false;
+    public override TargetPlatform TargetPlatform => TargetPlatform.PS3;
 
     public override Type MainPipelineType => typeof(PS3PatchPipeline);
     public override Type RevertPatchPipelineType => typeof(RevertEbootPatchPipeline);
