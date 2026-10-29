@@ -28,7 +28,7 @@ public class PrepareEbootPatcherAndVerifyStep : Step
         List<Message> messages = patcher.Verify(url, true);
         foreach (Message message in messages)
         {
-            State.Logger.LogInfo(LogType.Patcher, message.ToString());
+            RefresherState.Logger.LogInfo(LogType.Patcher, message.ToString());
         }
 
         if (messages.Any(m => m.Level == MessageLevel.Error))

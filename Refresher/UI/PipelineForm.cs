@@ -340,11 +340,11 @@ public class PipelineForm<TPipelineController> : RefresherForm, IAccessesPlatfor
             }
             catch (DirectoryNotFoundException)
             {
-                State.Logger.LogError(LogType.Accessor, "The games folder doesn't exist at that path. Please ensure you entered the right path/IP.");
+                RefresherState.Logger.LogError(LogType.Accessor, "The games folder doesn't exist at that path. Please ensure you entered the right path/IP.");
             }
             catch (Exception ex)
             {
-                State.Logger.LogError(LogType.Pipeline, $"Unhandled error while downloading games list: {ex}");
+                RefresherState.Logger.LogError(LogType.Pipeline, $"Unhandled error while downloading games list: {ex}");
                 SentrySdk.CaptureException(ex);
             }
         });
@@ -396,7 +396,7 @@ public class PipelineForm<TPipelineController> : RefresherForm, IAccessesPlatfor
                 }
                 catch(Exception e)
                 {
-                    State.Logger.LogWarning(LogType.InfoRetrieval, $"Failed to set image for {game}: {e}");
+                    RefresherState.Logger.LogWarning(LogType.InfoRetrieval, $"Failed to set image for {game}: {e}");
                 }
             }
 
@@ -494,7 +494,7 @@ public class PipelineForm<TPipelineController> : RefresherForm, IAccessesPlatfor
             }
             catch (Exception ex)
             {
-                State.Logger.LogError(LogType.Pipeline, $"Unhandled error while reverting the game's EBOOT: {ex}");
+                RefresherState.Logger.LogError(LogType.Pipeline, $"Unhandled error while reverting the game's EBOOT: {ex}");
             }
         });
     }

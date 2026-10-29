@@ -121,7 +121,7 @@ public abstract class PipelineController : IAccessesPlatform
         Debug.Assert(type.IsAssignableTo(typeof(Pipeline)));
         if (this._pipelines.Any(p => p.Key == category))
         {
-            State.Logger.LogTrace(LogType.PipelineController, $"Pipeline of category {category} is already initialized, skipping addition.");
+            RefresherState.Logger.LogTrace(LogType.PipelineController, $"Pipeline of category {category} is already initialized, skipping addition.");
             return;
         }
 

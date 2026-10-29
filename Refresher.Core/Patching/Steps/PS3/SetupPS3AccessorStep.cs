@@ -16,7 +16,7 @@ public class SetupPS3AccessorStep : Step
         string? remoteIp = this.UserInputs.ConsoleIP;
         if (remoteIp == null) return this.Fail("Can't connect to PS3 if no console IP address was entered.");
 
-        State.Logger.LogDebug(LogType.PS3, $"Using PS3 IP {remoteIp}");
+        RefresherState.Logger.LogDebug(LogType.PS3, $"Using PS3 IP {remoteIp}");
         
         PatchAccessor.Try(this, () =>
         {

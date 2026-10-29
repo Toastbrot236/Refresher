@@ -6,7 +6,6 @@ using Refresher.Core.Patching.Steps.Common;
 using Refresher.Core.Platform;
 using Refresher.Core.Storage;
 using Refresher.Core.Verification.AutoDiscover;
-using GlobalState = Refresher.Core.State;
 
 namespace Refresher.Core.Patching.Pipelines;
 
@@ -108,18 +107,18 @@ public abstract class Pipeline : IAccessesPlatform
             
             if (setupAccessorType == null)
             {
-                State.Logger.LogWarning(LogType.Pipeline, $"Target platform {this.TargetPlatform} has no corresponding accessor, so pipeline {pipeline} will not work! Please report this issue!");
+                RefresherState.Logger.LogWarning(LogType.Pipeline, $"Target platform {this.TargetPlatform} has no corresponding accessor, so pipeline {pipeline} will not work! Please report this issue!");
             }
             else
             {
-                State.Logger.LogDebug(LogType.Pipeline, $"Adding {setupAccessorType} as accessor setup step for target platform {context.TargetPlatform}, pipeline {this}.");
+                RefresherState.Logger.LogDebug(LogType.Pipeline, $"Adding {setupAccessorType} as accessor setup step for target platform {context.TargetPlatform}, pipeline {this}.");
                 this.AddStep(setupAccessorStepType);
             }
         }
 
         foreach (Type type in this.StepTypes)
         {
-            State.Logger.LogDebug(LogType.Pipeline, $"Adding regular step {type} to pipeline {this}.");
+            RefresherState.Logger.LogDebug(LogType.Pipeline, $"Adding regular step {type} to pipeline {this}.");
             this.AddStep(type);
         }
     }
@@ -159,14 +158,14 @@ public abstract class Pipeline : IAccessesPlatform
 
         // Validation should be done by either the form or the pipeline steps (or both if you really want to).
 
-        GlobalState.Logger.LogInfo(LogType.Pipeline, $"Pipeline {this.GetType().Name} started.");
+        RefresherState.Logger.LogInfo(LogType.Pipeline, $"Pipeline {this.GetType().Name} started.");
         this.State = PipelineState.Running;
 
         bool success = await this.RunListOfSteps(this._steps, cancellationToken);
 
         if (success)
         {
-            GlobalState.Logger.LogInfo(LogType.Pipeline, $"Pipeline {this.GetType().Name} finished!");
+            RefresherState.Logger.LogInfo(LogType.Pipeline, $"Pipeline {this.GetType().Name} finished!");
             this.State = PipelineState.Finished;
         
             PreviousInputStorage.Write(this.Context.UserInputs);
@@ -195,14 +194,14 @@ public abstract class Pipeline : IAccessesPlatform
                 }
                 catch (Exception e)
                 {
-                    GlobalState.Logger.LogWarning(LogType.Platform, "Failed to open server URL: " + e);
+                    RefresherState.Logger.LogWarning(LogType.Platform, "Failed to open server URL: " + e);
                     this.Platform.WarnPrompt("Sorry, we couldn't open the URL. You can usually reach it by using the same link as the one you gave to Refresher.");
                 }
             }
         }
         else
         {
-            GlobalState.Logger.LogInfo(LogType.Pipeline, $"Pipeline {this} failed!");
+            RefresherState.Logger.LogInfo(LogType.Pipeline, $"Pipeline {this} failed!");
             this.State = PipelineState.Error;
         }
     }
@@ -213,7 +212,7 @@ public abstract class Pipeline : IAccessesPlatform
         byte i = 1;
         foreach (Step step in steps)
         {
-            GlobalState.Logger.LogInfo(LogType.Pipeline, $"Executing {step.GetType().Name}... ({i}/{steps.Count})");
+            RefresherState.Logger.LogInfo(LogType.Pipeline, $"Executing {step.GetType().Name}... ({i}/{steps.Count})");
             this._currentStepIndex = i;
             this._currentStep = step;
 
