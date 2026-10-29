@@ -36,6 +36,8 @@ public class PipelineContext
     // TODO also allow blacklisting using a separate array
     public string[] GameNameWhitelist { get; set; } = [];
 
+    public TargetPlatform TargetPlatform { get; set; }
+
     /// <summary>
     /// Prefers the URL from AutoDiscover, but will fall back to the user-entered one.
     /// </summary>

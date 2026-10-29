@@ -10,42 +10,61 @@ namespace Refresher.Core.Patching.Controllers;
 /// </summary>
 public abstract class PipelineController : IAccessesPlatform
 {
+    /// <summary>
+    /// Quickly summarizes what the pipelines in this controller do as a whole.
+    /// Used by window title bars, and generally as the name of whatever form this controller is used by.
+    /// </summary>
     public abstract string Name { get; }
+
     /// <summary>
     /// Empty = don't do any filtering, show all games regardless of their name
     /// </summary>
     public virtual string[] GameNameWhitelist { get; } = [];
 
     /// <summary>
-    /// Used to get the guide page URL, aswell as the join key URL.
+    /// Used to create URLs unique to this controller, like the guide page URL, or the join key URL.
     /// </summary>
     public virtual string ShorthandUrlId { get; } = "";
     public string GuideLink => $"https://docs.littlebigrefresh.com/{this.ShorthandUrlId}";
 
-    // This is only here for compatibility, may or may not get removed soon.
-    public bool UsesPatchwork { get; protected init; }
+    // These two are only here for compatibility with PipelineForm, may or may not get removed soon,
+    // depending on whether we completely replace PipelineForm or not.
+    public virtual bool UsesPatchwork => false;
+    public virtual TargetPlatform TargetPlatform => TargetPlatform.None;
 
     /// <summary>
     /// Type of the pipeline which does the main operation of the form (usually this will be a patch pipeline).
     /// This is also what Initialize() will currently use to determine the default pipeline for CurrentPipeline.
     /// </summary>
+    /// <remarks>
+    /// Corresponds to PipelineCategory.Main
+    /// </remarks>
     public abstract Type MainPipelineType { get; }
 
     /// <summary>
     /// Type of pipeline to use when reverting the patch done by the main pipeline.
     /// Not all our forms have a revert option, so this is nullable.
     /// </summary>
+    /// <remarks>
+    /// Corresponds to PipelineCategory.RevertPatch
+    /// </remarks>
     public virtual Type? RevertPatchPipelineType { get; } = null;
 
     /// <summary>
     /// Type of pipeline to use when verifying the validity of the user's entered server data (usually just the URL).
     /// This will usually be AutoDiscover, but this way we can also use other pipelines for this incase that's ever needed.
     /// </summary>
+    /// <remarks>
+    /// Corresponds to PipelineCategory.VerifyServerInput
+    /// </remarks>
     public virtual Type? VerifyServerInputPipelineType { get; } = null;
 
     /// <summary>
     /// Type of pipeline to use when downloading data from the target platform, usually game metadata to show.
     /// </summary>
+    /// <remarks>
+    /// Corresponds to PipelineCategory.DownloadGameData
+    /// </remarks>
     public virtual Type? DownloadGameDataPipelineType { get; } = null;
 
     /// <summary>
@@ -59,7 +78,7 @@ public abstract class PipelineController : IAccessesPlatform
     public Pipeline CurrentPipeline { get; protected set; } = null!;
 
     /// <summary>
-    /// Contains data like user-entered inputs, AutoDiscover results, and other data shared and used by the pipelines.
+    /// Contains data like user-entered inputs, AutoDiscover results, and other data shared, used, and partially set by the pipelines.
     /// </summary>
     public PipelineContext Context { get; protected set; } = null!;
     public IPlatformInterface Platform => this.Context.Platform;
@@ -75,6 +94,7 @@ public abstract class PipelineController : IAccessesPlatform
         this.Context = new()
         {
             Platform = platform,
+            TargetPlatform = this.TargetPlatform,
             GameNameWhitelist = this.GameNameWhitelist,
             UserInputs = PreviousInputStorage.Inputs ?? new(), // load from file if available
         };
