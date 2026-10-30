@@ -15,39 +15,44 @@ public static class GuiItemHelper
     /// <param name="buttonText">
     /// If this isn't set, but 'onButtonClick' is, we will add a button regardless, but with default text.
     /// </param>
-    public static TableRow AsLabelledChild(Control child, string labelText, string tooltipText, EventHandler<EventArgs>? onButtonClick = null, string buttonText = "Do the thing")
+    public static TableRow AsLabelledChild(Control child, string labelText, string tooltipText, Button? button = null)
     {
         Label label = new()
         {
-            Text = labelText + ':',
+            // line break above label
+            Text = '\n' + labelText + ':',
             VerticalAlignment = VerticalAlignment.Center,
             ToolTip = tooltipText,
         };
 
-        if (onButtonClick == null)
+        if (button == null)
         {
-            return new(label, child);
+            return new(new TableLayout([
+                label,
+                child
+            ]));
         }
 
-        Button button = new(onButtonClick) { Text = buttonText };
-        DynamicLayout layout = new();
-
-        layout.AddRow(child, button);
-        layout.Spacing = new Size(5, 0);
-        return new(label, layout);
+        return new(new TableLayout([
+            label,
+            new DynamicLayout([child, button])
+            {
+                Spacing = new Size(5, 0)
+            }
+        ]));
     }
 
     /// <summary>
     /// Puts a label to the left, a TextBox (1 row text input) to the middle, and optionally a button to the right of the row.
     /// </summary>
-    public static TableRow AsLabelledTextInput(string labelText, string tooltipText, string defaultText, string placeholder, EventHandler<EventArgs>? onButtonClick = null, string buttonText = "Do the thing")
+    public static TableRow AsLabelledTextInput(string labelText, string tooltipText, string defaultText, string placeholder, Button? button = null)
     {
         TextBox textBox = new()
         {
             Text = defaultText,
             PlaceholderText = placeholder
         };
-        return AsLabelledChild(textBox, labelText, tooltipText, onButtonClick, buttonText);
+        return AsLabelledChild(textBox, labelText, tooltipText, button);
     }
 
     /// <summary>
