@@ -8,5 +8,5 @@ public enum PipelineCategory
     Main,
     RevertPatch,
     DownloadGameData,
-    VerifyServerInput,
+    AutoDiscover,
 }

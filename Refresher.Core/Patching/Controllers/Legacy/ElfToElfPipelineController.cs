@@ -10,6 +10,6 @@ public class ElfToElfPipelineController() : PipelineController()
 
     public override Type MainPipelineType => typeof(ElfToElfPatchPipeline);
     public override Type RevertPatchPipelineType => typeof(RevertEbootPatchPipeline);
-    public override Type VerifyServerInputPipelineType => typeof(AutoDiscoverPipeline);
+    public override Type AutoDiscoverPipelineType => typeof(AutoDiscoverPipeline);
     public override Type DownloadGameDataPipelineType => typeof(DownloadGameListPipeline);
 }

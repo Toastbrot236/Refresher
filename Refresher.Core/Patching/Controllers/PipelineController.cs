@@ -51,13 +51,13 @@ public abstract class PipelineController : IAccessesPlatform
     public virtual Type? RevertPatchPipelineType { get; } = null;
 
     /// <summary>
-    /// Type of pipeline to use when verifying the validity of the user's entered server data (usually just the URL).
-    /// This will usually be AutoDiscover, but this way we can also use other pipelines for this incase that's ever needed.
+    /// Type of pipeline to use when using AutoDiscover. This is not just AutoDiscoverPipeline incase a controller needs a pipeline
+    /// with additional steps for this.
     /// </summary>
     /// <remarks>
-    /// Corresponds to PipelineCategory.VerifyServerInput
+    /// Corresponds to PipelineCategory.AutoDiscover
     /// </remarks>
-    public virtual Type? VerifyServerInputPipelineType { get; } = null;
+    public virtual Type? AutoDiscoverPipelineType { get; } = null;
 
     /// <summary>
     /// Type of pipeline to use when downloading data from the target platform, usually game metadata to show.
@@ -104,7 +104,7 @@ public abstract class PipelineController : IAccessesPlatform
         // or use the controller's public type properties.
         this.AddPipeline(this.MainPipelineType, PipelineCategory.Main);
         this.AddPipeline(this.RevertPatchPipelineType, PipelineCategory.RevertPatch);
-        this.AddPipeline(this.VerifyServerInputPipelineType, PipelineCategory.VerifyServerInput);
+        this.AddPipeline(this.AutoDiscoverPipelineType, PipelineCategory.AutoDiscover);
         this.AddPipeline(this.DownloadGameDataPipelineType, PipelineCategory.DownloadGameData);
 
         // Set current pipeline to the main one by default.

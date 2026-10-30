@@ -13,5 +13,5 @@ public class LbpRpcs3ReconfigurePipelineController() : PipelineController()
 
     // This controller doesn't revert Eboots, and also doesn't show game metadata
     public override Type MainPipelineType => typeof(PatchworkRPCS3ConfigPipeline);
-    public override Type VerifyServerInputPipelineType => typeof(AutoDiscoverPipeline);
+    public override Type AutoDiscoverPipelineType => typeof(AutoDiscoverPipeline);
 }

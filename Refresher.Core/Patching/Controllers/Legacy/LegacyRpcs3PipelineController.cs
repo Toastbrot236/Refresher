@@ -13,6 +13,6 @@ public class LegacyRpcs3PipelineController() : PipelineController()
 
     // This one doesn't have any revert pipeline
     public override Type MainPipelineType => typeof(RPCS3PatchPipeline);
-    public override Type VerifyServerInputPipelineType => typeof(AutoDiscoverPipeline);
+    public override Type AutoDiscoverPipelineType => typeof(AutoDiscoverPipeline);
     public override Type DownloadGameDataPipelineType => typeof(DownloadGameListPipeline);
 }

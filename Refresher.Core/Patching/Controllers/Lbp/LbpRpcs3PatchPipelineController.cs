@@ -13,6 +13,6 @@ public class LbpRpcs3PatchPipelineController() : PipelineController()
 
     public override Type MainPipelineType => typeof(LbpRPCS3PatchPipeline);
     public override Type RevertPatchPipelineType => typeof(RevertEbootPatchPipeline);
-    public override Type VerifyServerInputPipelineType => typeof(AutoDiscoverPipeline);
+    public override Type AutoDiscoverPipelineType => typeof(AutoDiscoverPipeline);
     public override Type DownloadGameDataPipelineType => typeof(DownloadGameListPipeline);
 }
