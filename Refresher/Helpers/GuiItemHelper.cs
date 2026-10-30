@@ -32,7 +32,7 @@ public static class GuiItemHelper
         Button button = new(onButtonClick) { Text = buttonText };
         DynamicLayout layout = new();
 
-        layout.AddRow(button, child);
+        layout.AddRow(child, button);
         layout.Spacing = new Size(5, 0);
         return new(label, layout);
     }
