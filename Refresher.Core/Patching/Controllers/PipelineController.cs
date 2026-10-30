@@ -76,6 +76,7 @@ public abstract class PipelineController : IAccessesPlatform
     /// The current pipeline being executed (or the last one that was executed), for stuff like progress bars.
     /// </summary>
     public Pipeline CurrentPipeline { get; protected set; } = null!;
+    public PipelineCategory CurrentPipelineCategory { get; protected set; } = PipelineCategory.Main;
 
     /// <summary>
     /// Contains data like user-entered inputs, AutoDiscover results, and other data shared, used, and partially set by the pipelines.
@@ -111,7 +112,8 @@ public abstract class PipelineController : IAccessesPlatform
         Pipeline? defaultPipeline = this.GetPipeline(PipelineCategory.Main);
         Debug.Assert(defaultPipeline != null);
 
-        this.CurrentPipeline = defaultPipeline!;
+        this.CurrentPipeline = defaultPipeline;
+        this.CurrentPipelineCategory = PipelineCategory.Main;
     }
 
     private void AddPipeline(Type? type, PipelineCategory category)
@@ -141,6 +143,7 @@ public abstract class PipelineController : IAccessesPlatform
         }
 
         this.CurrentPipeline = pipeline;
+        this.CurrentPipelineCategory = category;
         await pipeline.ExecuteAsync();
     }
 
