@@ -1,11 +1,9 @@
-using System.Collections.Frozen;
 using System.Diagnostics;
 using Refresher.Core.Accessors;
 using Refresher.Core.Patching.Steps;
 using Refresher.Core.Patching.Steps.PS3;
 using Refresher.Core.Patching.Steps.RPCS3;
 using Refresher.Core.Patching.Controllers;
-using Refresher.Core.Patching.Steps.Common;
 using Refresher.Core.Platform;
 using Refresher.Core.Storage;
 using Refresher.Core.Verification.AutoDiscover;
@@ -50,6 +48,7 @@ public abstract class Pipeline : IAccessesPlatform
     public PatchAccessor? Accessor { get; set; }
     public GameInformation? GameInformation { get; set; }
     public EncryptionDetails? EncryptionDetails { get; set; }
+    public CancellationTokenSource? Cts { get; set; }
 
     public PipelineState State { get; private set; } = PipelineState.NotStarted;
     
@@ -152,7 +151,7 @@ public abstract class Pipeline : IAccessesPlatform
         this._steps.Add(step);
     }
 
-    public async Task ExecuteAsync(CancellationToken cancellationToken = default)
+    public async Task ExecuteAsync(CancellationTokenSource? cts = null)
     {
         if (this.State != PipelineState.NotStarted)
         {
@@ -160,12 +159,15 @@ public abstract class Pipeline : IAccessesPlatform
             throw new InvalidOperationException("Pipeline must be restarted before it can be executed again.");
         }
 
+        cts ??= new();
+        this.Cts = cts;
+
         // Validation should be done by either the form or the pipeline steps (or both if you really want to).
 
         RefresherState.Logger.LogInfo(LogType.Pipeline, $"Pipeline {this.GetType().Name} started.");
         this.State = PipelineState.Running;
 
-        bool success = await this.RunListOfSteps(this._steps, cancellationToken);
+        bool success = await this.RunListOfSteps(this._steps, cts.Token);
 
         if (success)
         {
@@ -245,6 +247,17 @@ public abstract class Pipeline : IAccessesPlatform
         }
 
         return true;
+    }
+
+    public void Cancel()
+    {
+        if (this.Cts == null) return;
+        if (this.State != PipelineState.Running)
+        {
+            RefresherState.Logger.LogDebug(LogType.Pipeline, $"Can't cancel pipeline if its state is {this.State}");
+            return;
+        }
+        this.Cts.Cancel();
     }
 
     public void Fail(Step? step, string reason)
