@@ -61,14 +61,14 @@ public abstract class Pipeline : IAccessesPlatform
                 return 1;
             
             float completed = (this._currentStepIndex - 1) / (float)this._stepCount;
-            float currentStep = this._currentStep?.Progress ?? 0f;
+            float currentStep = this.CurrentStep?.Progress ?? 0f;
             float stepWeight = 1f / this._stepCount;
             
             return completed + currentStep * stepWeight;
         }
     }
 
-    public float CurrentProgress => this.State == PipelineState.Finished ? 1 : this._currentStep?.Progress ?? 0;
+    public float CurrentProgress => this.State == PipelineState.Finished ? 1 : this.CurrentStep?.Progress ?? 0;
 
     public virtual bool NeedsAccessor => false;
 
@@ -77,7 +77,7 @@ public abstract class Pipeline : IAccessesPlatform
     
     private int _stepCount;
     private byte _currentStepIndex;
-    private Step? _currentStep;
+    public Step? CurrentStep { get; protected set; }
 
     public virtual string GetStateText()
     {
@@ -133,7 +133,7 @@ public abstract class Pipeline : IAccessesPlatform
 
         this._stepCount = 0;
         this._currentStepIndex = 0;
-        this._currentStep = null;
+        this.CurrentStep = null;
 
         this.Patcher = null;
         if(this.Accessor is IDisposable disposable)
@@ -218,7 +218,7 @@ public abstract class Pipeline : IAccessesPlatform
         {
             RefresherState.Logger.LogInfo(LogType.Pipeline, $"Executing {step.GetType().Name}... ({i}/{steps.Count})");
             this._currentStepIndex = i;
-            this._currentStep = step;
+            this.CurrentStep = step;
 
             try
             {
