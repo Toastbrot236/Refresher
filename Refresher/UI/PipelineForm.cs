@@ -47,7 +47,6 @@ public abstract class PipelineForm : RefresherForm, IAccessesPlatform
         
     }
     
-    // Update 
     public PipelineForm(AutoApplyInformation? autoApply) : base("Patch", new Size(700, -1), false)
     {
         this.AutoApply = autoApply;
@@ -57,10 +56,6 @@ public abstract class PipelineForm : RefresherForm, IAccessesPlatform
         this.Pipeline.Initialize(this.Platform);
         
         PreviousInputStorage.Read();
-
-        // Init Patch Button
-
-        this.PatchButton = new Button(this.OnPatchButtonClick);
 
         Thread progressThread = new(() =>
         {
@@ -220,6 +215,7 @@ public abstract class PipelineForm : RefresherForm, IAccessesPlatform
                 Text = $"{game.Name} [{game.TitleId} {game.Version}]",
                 Version = game.Version ?? "00.00",
                 TitleId = game.TitleId,
+                Key = game.TitleId,
             };
 
             if (GameCacheStorage.IconExistsInCache(game.TitleId))
