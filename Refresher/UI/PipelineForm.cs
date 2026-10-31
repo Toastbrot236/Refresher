@@ -344,10 +344,6 @@ public abstract class PipelineForm : RefresherForm, IAccessesPlatform
             try
             {
                 await this.Pipeline!.RevertGameEbootAsync();
-                await Application.Instance.InvokeAsync(() =>
-                {
-                    MessageBox.Show("The EBOOT was successfully reverted to the original copy.", "Success!");
-                });
             }
             catch (Exception ex)
             {
