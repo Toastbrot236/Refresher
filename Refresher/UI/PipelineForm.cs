@@ -7,7 +7,6 @@ using Refresher.Core;
 using Refresher.Core.Logging;
 using Refresher.Core.Patching;
 using Refresher.Core.Patching.Pipelines;
-using Refresher.Core.Patching.Steps;
 using Refresher.Core.Platform;
 using Refresher.Core.Storage;
 using Refresher.UI.Items;
@@ -30,13 +29,12 @@ public abstract class PipelineForm : RefresherForm, IAccessesPlatform
     
     protected TableLayout FormLayout { get; set; } = new();
     protected Button? ConnectButton { get; set; }
-    protected DropDown? GamesDropDown { get; set; }
+    protected GameListDropdown? GamesDropDown { get; set; }
 
     // We need references to these so we can easily access their values when filling them into the pipeline,
     // or incase we need to change the value (e.g. AutoDiscover)
     protected ServerUrlInput? ServerUrlInput { get; set; }
     protected JoinKeyInput? JoinKeyInput { get; set; }
-    protected LabelledRow? ConnectionInput { get; set; }
 
     protected AutoApplyInformation? AutoApply { get; set; }
     public new IPlatformInterface Platform { get; set; }
@@ -213,7 +211,7 @@ public abstract class PipelineForm : RefresherForm, IAccessesPlatform
     {
         Debug.Assert(this.GamesDropDown != null);
 
-        this.GamesDropDown.Items.Clear();
+        this.GamesDropDown.Dropdown.Items.Clear();
         
         foreach (GameInformation game in games)
         {
@@ -250,10 +248,10 @@ public abstract class PipelineForm : RefresherForm, IAccessesPlatform
                 }
             }
 
-            this.GamesDropDown.Items.Add(item);
+            this.GamesDropDown.Dropdown.Items.Add(item);
         }
 
-        this.GamesDropDown.Enabled = true;
+        this.GamesDropDown.Dropdown.Enabled = true;
     }
 
     protected virtual void OnPatchButtonClick(object? sender, EventArgs e)
@@ -330,16 +328,13 @@ public abstract class PipelineForm : RefresherForm, IAccessesPlatform
 
     protected void OnAutoDiscoverClick(object? sender, EventArgs e)
     {
-        if (this.Pipeline == null)
+        if (this.Pipeline == null || this.ServerUrlInput == null)
             return;
         
         if (this.Pipeline.State == PipelineState.Running)
             return;
         
-        TextControl control = (TextControl)this.FormLayout.Rows
-            .Where(r => r.Cells[0].Control.ToolTip == CommonStepInputs.ServerUrl.Id)
-            .Select(r => r.Cells[1].Control)
-            .First();
+        TextControl control = (TextControl)this.ServerUrlInput.Input;
 
         string url = control.Text;
         this.Controller?.AutoDiscoverButtonClick(url, autoDiscover =>
@@ -356,7 +351,7 @@ public abstract class PipelineForm : RefresherForm, IAccessesPlatform
     
     protected void OnCopyJoinKeyClick(object? sender, EventArgs e)
     {
-        if (this.Pipeline == null)
+        if (this.Pipeline == null || this.JoinKeyInput == null)
             return;
         
         if (this.Pipeline.State == PipelineState.Running)
@@ -364,11 +359,7 @@ public abstract class PipelineForm : RefresherForm, IAccessesPlatform
         
         Debug.Assert(this.Pipeline.ShorthandUrlId != null);
         
-        TextControl control = (TextControl)this.FormLayout.Rows
-            .Where(r => r.Cells[0].Control.ToolTip == CommonStepInputs.LobbyPassword.Id)
-            .Select(r => r.Cells[1].Control)
-            .First();
-
+        TextControl control = this.JoinKeyInput.Input;
         string key = control.Text;
         
         if((Keyboard.Modifiers & Keys.Shift) != 0 || (Keyboard.Modifiers & Keys.Control) != 0) 
