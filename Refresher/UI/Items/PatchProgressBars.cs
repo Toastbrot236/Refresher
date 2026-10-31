@@ -1,3 +1,4 @@
+using Eto.Drawing;
 using Eto.Forms;
 
 namespace Refresher.UI.Items;
@@ -22,9 +23,16 @@ public class PatchProgressBars : ITableRowWrapper
         this.PipelineProgressBar.Value = 0;
         this.StepProgressBar.Value = 0;
 
-        this.Row = new(new TableLayout([
-            this.PipelineProgressRow,
-            this.StepProgressRow,
-        ]));
+        this.Row = new(new StackLayout([
+            new(this.PipelineProgressRow.Row),
+            new(this.StepProgressRow.Row),
+        ])
+        {
+            Padding = new Padding(0, 10, 0, 10),
+            Spacing = 5,
+            HorizontalContentAlignment = HorizontalAlignment.Stretch,
+            VerticalContentAlignment = VerticalAlignment.Stretch,
+            Size = new Size(-1, -1),
+        });
     }
 }
