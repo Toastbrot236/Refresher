@@ -4,9 +4,9 @@ using Refresher.Core.Patching.Pipelines.Lbp;
 using Refresher.Core.Patching.Steps;
 using Refresher.UI.Items;
 
-namespace Refresher.UI;
+namespace Refresher.UI.PatchForms;
 
-public abstract class LbpPS3PatchForm : PipelineForm
+public class LbpPS3PatchForm : PipelineForm
 {
     // TODO replace with PipelineController once we move the hardcoded steps from the base Pipeline class (e.g. AutoDiscover, eboot revert),
     // and once we make PipelineController (and superclasses of it) manage all the pipelines we need per form
