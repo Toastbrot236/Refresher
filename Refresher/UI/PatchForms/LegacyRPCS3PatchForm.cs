@@ -21,39 +21,26 @@ public class LegacyRPCS3PatchForm : PipelineForm
     public LegacyRPCS3PatchForm(AutoApplyInformation? autoApply) : base(autoApply)
     {
         // Init and add the GUI components
-        this.Content = new Splitter
+        this.Content = new StackLayout([
+            new((this.ConnectionInput = new Rpcs3ConnectionInput(this.OnConnect)).Row),
+            new((this.GamesDropDown = new GameListDropdown()).Row),
+            new((this.ServerUrlInput = new ServerUrlInput(this.OnAutoDiscoverClick)).Row),
+
+            (this.LogDisplay = new PatchLogDisplay()).StackItem,
+            new((this.ProgressBars = new PatchProgressBars()).Row),
+
+            this.PatchButton = new Button(this.OnPatchButtonClick) { Text = "Apply Patch!" },
+            this.PatchButton = new Button(this.OnPatchButtonClick) { Text = "Revert Patch" },
+            new Button(this.OnViewGuideClick) { Text = "View Guide" },
+            new Button(this.OnCopyLogClick) { Text = "Copy Log (for support)" },
+
+        ])
         {
-            Orientation = Orientation.Vertical,
-            FixedPanel = SplitterFixedPanel.Panel1,
-            Panel1 = this.FormLayout = new TableLayout([
-                (this.ConnectionInput = new Rpcs3ConnectionInput(this.OnConnect)).Row,
-                (this.GamesDropDown = new GameListDropdown()).Row,
-                (this.ServerUrlInput = new ServerUrlInput(this.OnAutoDiscoverClick)).Row,
-            ])
-            {
-                Spacing = new Size(5, 5),
-                Padding = new Padding(0, 0, 0, 10),
-            },
-            Panel2 = new TableLayout([
-                // these are already initted by base class, but do it explicitly here anyway
-                (this.LogDisplay = new()).Row,
-                (this.ProgressBars = new()).Row,
-
-                new Label(), // line break
-
-                this.PatchButton = new Button(this.OnPatchButtonClick) { Text = "Apply Patch!" },
-                this.RevertPatchButton = new Button(this.OnRevertPatchClick) { Text = "Revert Patch" },
-
-                new Label(), // line break
-
-                new Button(this.OnViewGuideClick) { Text = "View Guide" },
-                new Button(this.OnCopyLogClick) { Text = "Copy Log (for support)" },
-            ])
-            {
-                Padding = new Padding(0, 10, 0, 10),
-                Spacing = new Size(5, 5),
-                Size = new Size(-1, -1),
-            },
+            Padding = new Padding(0, 10, 0, 10),
+            Spacing = 5,
+            HorizontalContentAlignment = HorizontalAlignment.Stretch,
+            VerticalContentAlignment = VerticalAlignment.Stretch,
+            Size = new Size(-1, -1),
         };
     }
 

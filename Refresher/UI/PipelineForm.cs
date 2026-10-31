@@ -152,7 +152,7 @@ public abstract class PipelineForm : RefresherForm, IAccessesPlatform
             return;
 
         this.Pipeline.Reset();
-        this.AddFormInputsToPipelineInternal();
+        this.AddFormInputsToPipeline();
     }
 
     protected abstract void AddFormInputsToPipeline();
@@ -298,7 +298,7 @@ public abstract class PipelineForm : RefresherForm, IAccessesPlatform
             }
         }
 
-        this.AddFormInputsToPipeline();
+        this.AddFormInputsToPipelineInternal();
 
         this.Controller?.MainButtonClick();
         this.UpdateFormState();

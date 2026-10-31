@@ -15,7 +15,7 @@ public class LabelledRow : TableRow, ITableRowWrapper
         this.Label = new()
         {
             // line break above label
-            Text = '\n' + labelText + ':',
+            Text = labelText + ':',
             VerticalAlignment = VerticalAlignment.Center,
             ToolTip = tooltipText,
         };
@@ -23,16 +23,23 @@ public class LabelledRow : TableRow, ITableRowWrapper
         this.Content = content;
         this.SideButton = sideButton;
 
-        this.Row = new(new TableLayout([
-            this.Label,
-
-            // Just content if no button, else button to the right of content
-            sideButton == null
-            ? content
-            : new DynamicLayout([content, sideButton])
-                {
-                    Spacing = new Size(5, 0)
-                }
-        ]));
+        if (sideButton == null)
+        {
+            this.Row = new(new TableLayout([
+                this.Label,
+                this.Content,
+            ]));
+        }
+        else
+        {
+            this.Row = new(new TableLayout([
+                this.Label,
+                this.Content,
+                // would make more sense if the button was to the right of the text field,
+                // but eto sucks and doesn't let me set the text field to take max width even though it's
+                // not the right-most component
+                sideButton,
+            ]));
+        }
     }
 }

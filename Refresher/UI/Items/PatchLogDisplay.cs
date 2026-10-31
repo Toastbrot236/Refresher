@@ -2,9 +2,9 @@ using Eto.Forms;
 
 namespace Refresher.UI.Items;
 
-public class PatchLogDisplay : ITableRowWrapper
+public class PatchLogDisplay
 {
-    public TableRow Row => this.LabelRow.Row;
+    public StackLayoutItem StackItem { get; set; }
     public LabelledRow LabelRow { get; set; }
     public ListBox Display { get; set; }
 
@@ -22,6 +22,9 @@ public class PatchLogDisplay : ITableRowWrapper
                 }, VerticalAlignment.Top, true),
         */
         
-        this.LabelRow = new(this.Display, "Patch log", "Displays various messages related to patch progress");
+        this.StackItem = new((this.LabelRow = new LabelledRow (this.Display = new ListBox
+        {
+            Height = -1,
+        }, "Patch log", "Displays various messages related to patch progress")).Row, VerticalAlignment.Top, true);
     }
 }

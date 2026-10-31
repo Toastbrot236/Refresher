@@ -39,11 +39,15 @@ public class MainForm : RefresherForm
             new Label { Text = "Welcome to Refresher! Please pick a patching method to continue." },
             this._updateStatusLabel = new Label(),
 
+            new Label(), // line break
+
             new Label { Text = "LittleBigPlanet:" },
-            new Button((_, _) => this.ShowChild<LbpPS3PatchForm>()) { Text = "Patch LBP1/2/3 on PS3" },
-            new Button((_, _) => this.ShowChild<LbpPS3ReconfigureForm>()) { Text = "Reconfigure Patch on PS3" },
-            new Button((_, _) => this.ShowChild<LbpRPCS3PatchForm>()) { Text = "Patch LBP1/2/3 on RPCS3" },
-            new Button((_, _) => this.ShowChild<LbpRPCS3ReconfigureForm>()) { Text = "Reconfigure Patch on RPCS3" },
+            new Button((_, _) => this.ShowChild<LbpPS3PatchForm>()) { Text = "Patch Unpatched LBP1/2/3 on PS3" },
+            new Button((_, _) => this.ShowChild<LbpPS3ReconfigureForm>()) { Text = "Reconfigure Patched LBPs on PS3" },
+            new Button((_, _) => this.ShowChild<LbpRPCS3PatchForm>()) { Text = "Patch Unpatched LBP1/2/3 on RPCS3" },
+            new Button((_, _) => this.ShowChild<LbpRPCS3ReconfigureForm>()) { Text = "Reconfigure Patched LBPs on RPCS3" },
+
+            new Label(), // line break
 
             new Label { Text = "Legacy options:" },
             new Button((_, _) => this.ShowChild<LegacyPS3PatchForm>()) { Text = "Patch non-LBP PS3 game" },

@@ -19,6 +19,9 @@ public class PatchProgressBars : ITableRowWrapper
         this.PipelineProgressRow = new(this.PipelineProgressBar = new(), "Pipeline progress", "");
         this.StepProgressRow = new(this.StepProgressBar = new(), "Step progress", "");
 
+        this.PipelineProgressBar.Value = 0;
+        this.StepProgressBar.Value = 0;
+
         this.Row = new(new TableLayout([
             this.PipelineProgressRow,
             this.StepProgressRow,
