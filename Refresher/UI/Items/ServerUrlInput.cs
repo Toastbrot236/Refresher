@@ -2,16 +2,16 @@ using Eto.Forms;
 
 namespace Refresher.UI.Items;
 
-public class ServerUrlInput
+public class ServerUrlInput : ITableRowWrapper
 {
-    public TableRow OuterRow { get; set; }
-    public LabelledRow InputRow { get; set; }
+    public TableRow Row { get; set; }
+    public LabelledRow InputLabelRow { get; set; }
     public TextBox Input { get; set; }
     public Button? AutoDiscoverButton { get; set; }
 
     public ServerUrlInput(EventHandler<EventArgs> onAutoDiscoverClick)
     {
-        this.InputRow = new(this.Input = new TextBox
+        this.InputLabelRow = new(this.Input = new TextBox
         {
             Text = "",
             PlaceholderText = "http://example.com"
@@ -22,8 +22,8 @@ public class ServerUrlInput
             Text = "AutoDiscover" // should be updated by parent form anyway
         };
         
-        this.OuterRow = new(new TableLayout([
-            this.InputRow,
+        this.Row = new(new TableLayout([
+            this.InputLabelRow,
             this.AutoDiscoverButton,
         ]));
     }

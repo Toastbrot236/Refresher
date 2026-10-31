@@ -2,9 +2,10 @@ using Eto.Forms;
 
 namespace Refresher.UI.Items;
 
-public class GameListDropdown
+public class GameListDropdown : ITableRowWrapper
 {
-    public LabelledRow Row { get; set; }
+    public TableRow Row => this.LabelRow.Row;
+    public LabelledRow LabelRow { get; set; }
     public DropDown Dropdown { get; set; }
 
     // No content initially, will be manually set by the parent's OnConnect() method
@@ -16,6 +17,6 @@ public class GameListDropdown
             Height = 56,
         };
         
-        this.Row = new(this.Dropdown, "Game", "Select the game you want to patch (only available once you connect)");
+        this.LabelRow = new(this.Dropdown, "Game", "Select the game you want to patch (only available once you connect)");
     }
 }

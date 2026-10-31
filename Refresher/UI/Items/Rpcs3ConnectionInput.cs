@@ -4,9 +4,10 @@ using Refresher.Core.Helpers;
 
 namespace Refresher.UI.Items;
 
-public class Rpcs3ConnectionInput
+public class Rpcs3ConnectionInput : ITableRowWrapper
 {
-    public LabelledRow Row { get; set; }
+    public TableRow Row => this.LabelRow.Row;
+    public LabelledRow LabelRow { get; set; }
     public FilePicker DevHdd0Picker { get; set; }
 
     public Rpcs3ConnectionInput(EventHandler<EventArgs> onConnect)
@@ -18,6 +19,6 @@ public class Rpcs3ConnectionInput
         };
         this.DevHdd0Picker.FilePathChanged += onConnect;
         
-        this.Row = new(this.DevHdd0Picker, "RPCS3 dev_hdd0 folder", "Select the dev_hdd0 folder of your RPCS3 installation");
+        this.LabelRow = new(this.DevHdd0Picker, "RPCS3 dev_hdd0 folder", "Select the dev_hdd0 folder of your RPCS3 installation");
     }
 }

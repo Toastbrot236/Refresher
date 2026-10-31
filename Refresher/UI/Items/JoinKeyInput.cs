@@ -2,9 +2,10 @@ using Eto.Forms;
 
 namespace Refresher.UI.Items;
 
-public class JoinKeyInput
+public class JoinKeyInput : ITableRowWrapper
 {
-    public LabelledRow Row { get; set; }
+    public TableRow Row => this.LabelRow.Row;
+    public LabelledRow LabelRow { get; set; }
     public TextBox Input { get; set; }
 
     public JoinKeyInput(EventHandler<EventArgs> onCopyUrlClick)
@@ -15,7 +16,7 @@ public class JoinKeyInput
             PlaceholderText = "(leave empty to randomize)"
         };
         
-        this.Row = new(this.Input, "Join Key", "Enter the Join Key you want to use",
+        this.LabelRow = new(this.Input, "Join Key", "Enter the Join Key you want to use",
             new Button(onCopyUrlClick) { Text = "Copy as URL" });
     }
 }

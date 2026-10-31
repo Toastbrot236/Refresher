@@ -3,7 +3,7 @@ using Eto.Forms;
 
 namespace Refresher.UI.Items;
 
-public class LabelledRow : TableRow
+public class LabelledRow : TableRow, ITableRowWrapper
 {
     public TableRow Row { get; set; }
     public Label Label { get; set; }

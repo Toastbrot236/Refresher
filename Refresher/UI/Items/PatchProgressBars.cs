@@ -2,7 +2,7 @@ using Eto.Forms;
 
 namespace Refresher.UI.Items;
 
-public class PatchProgressBars
+public class PatchProgressBars : ITableRowWrapper
 {
     public TableRow Row { get; set; }
 
