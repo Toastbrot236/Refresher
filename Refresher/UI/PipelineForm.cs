@@ -25,7 +25,7 @@ public abstract class PipelineForm : RefresherForm, IAccessesPlatform
     protected Button? RevertPatchButton { get; set; }
     protected Button? AutoDiscoverButton { get; set; }
     protected PatchProgressBars ProgressBars { get; set; } = new();
-    protected ListBox LogMessageDisplay { get; set; } = new();
+    protected PatchLogDisplay LogDisplay { get; set; } = new();
     
     protected TableLayout FormLayout { get; set; } = new();
     protected Button? ConnectButton { get; set; }
@@ -110,7 +110,7 @@ public abstract class PipelineForm : RefresherForm, IAccessesPlatform
         }
     }
 
-    private void UpdateFormState()
+    protected virtual void UpdateFormState()
     {
         if (this.Controller == null)
             return;
@@ -149,7 +149,7 @@ public abstract class PipelineForm : RefresherForm, IAccessesPlatform
         }
     }
 
-    private bool _shouldTriggerOnConnect = false;
+    protected bool _shouldTriggerOnConnect = false;
 
     protected abstract void AddFormInputsToPipeline();
     
@@ -334,7 +334,7 @@ public abstract class PipelineForm : RefresherForm, IAccessesPlatform
         if (this.Pipeline.State == PipelineState.Running)
             return;
         
-        TextControl control = (TextControl)this.ServerUrlInput.Input;
+        TextControl control = this.ServerUrlInput.Input;
 
         string url = control.Text;
         this.Controller?.AutoDiscoverButtonClick(url, autoDiscover =>
@@ -345,7 +345,7 @@ public abstract class PipelineForm : RefresherForm, IAccessesPlatform
             this.AutoDiscoverButton.Enabled = false;
 
             control.Text = autoDiscover.Url;
-            control.Enabled = false;
+            control.Enabled = false; // TODO allow to re-enable
         });
     }
     
@@ -388,7 +388,7 @@ public abstract class PipelineForm : RefresherForm, IAccessesPlatform
     protected void OnCopyLogClick(object? sender, EventArgs e)
     {
         StringBuilder log = new();
-        foreach (IListItem item in this.LogMessageDisplay.Items)
+        foreach (IListItem item in this.LogDisplay.Display.Items)
         {
             log.AppendLine(item.Text);
         }
@@ -397,21 +397,21 @@ public abstract class PipelineForm : RefresherForm, IAccessesPlatform
         MessageBox.Show("The log was successfully copied to the clipboard.", "Success");
     }
     
-    private void OnLog(RefresherLog log)
+    protected void OnLog(RefresherLog log)
     {
         Application.Instance.Invoke(() =>
         {
             // somehow getting hit on sentry?
             // id REFRESHER-88
             // ReSharper disable once ConditionIsAlwaysTrueOrFalseAccordingToNullableAPIContract
-            if (this.LogMessageDisplay == null)
+            if (this.LogDisplay == null)
                 return;
             
-            this.LogMessageDisplay.Items.Add($"[{log.Level}] [{log.Category}] {log.Content}");
+            this.LogDisplay.Display.Items.Add($"[{log.Level}] [{log.Category}] {log.Content}");
         
             // automatically scroll to the bottom by highlighting the last item temporarily
-            this.LogMessageDisplay.SelectedIndex = this.LogMessageDisplay.Items.Count - 1;
-            this.LogMessageDisplay.SelectedIndex = -1;
+            this.LogDisplay.Display.SelectedIndex = this.LogDisplay.Display.Items.Count - 1;
+            this.LogDisplay.Display.SelectedIndex = -1;
             
             if (log.Level <= LogLevel.Error && log.Category != nameof(LogType.Platform))
             {
