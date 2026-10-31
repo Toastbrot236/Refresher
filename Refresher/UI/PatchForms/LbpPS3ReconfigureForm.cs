@@ -12,6 +12,7 @@ public class LbpPS3ReconfigureForm : PipelineForm
     // and once we make PipelineController (and superclasses of it) manage all the pipelines we need per form
     protected override Type PipelineType => typeof(PatchworkPS3ConfigPipeline);
     protected Ps3ConnectionInput ConnectionInput { get; set; }
+    protected override Button? ConnectButton => this.ConnectionInput.LabelRow.SideButton;
 
     public LbpPS3ReconfigureForm() : this(null)
     {

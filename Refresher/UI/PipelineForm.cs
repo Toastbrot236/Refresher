@@ -23,12 +23,12 @@ public abstract class PipelineForm : RefresherForm, IAccessesPlatform
 
     protected Button? PatchButton { get; set; }
     protected Button? RevertPatchButton { get; set; }
-    protected Button? AutoDiscoverButton { get; set; }
+    protected Button? AutoDiscoverButton => this.ServerUrlInput?.AutoDiscoverButton;
     protected PatchProgressBars ProgressBars { get; set; } = new();
     protected PatchLogDisplay LogDisplay { get; set; } = new();
     
     protected TableLayout FormLayout { get; set; } = new();
-    protected Button? ConnectButton { get; set; }
+    protected virtual Button? ConnectButton => null;
     protected GameListDropdown? GamesDropDown { get; set; }
 
     // We need references to these so we can easily access their values when filling them into the pipeline,
@@ -47,13 +47,16 @@ public abstract class PipelineForm : RefresherForm, IAccessesPlatform
         
     }
     
-    public PipelineForm(AutoApplyInformation? autoApply) : base("Patch", new Size(700, -1), false)
+    public PipelineForm(AutoApplyInformation? autoApply) : base("Patch", new Size(700, 700), false)
     {
         this.AutoApply = autoApply;
         this.Platform = new EtoPlatformInterface(this);
 
         this.Pipeline = (Pipeline)Activator.CreateInstance(this.PipelineType)!;
         this.Pipeline.Initialize(this.Platform);
+
+        this.Controller = new(this.Pipeline, Application.Instance.Invoke);
+        this.UpdateSubtitle(this.Pipeline.Name);
         
         PreviousInputStorage.Read();
 
@@ -108,7 +111,10 @@ public abstract class PipelineForm : RefresherForm, IAccessesPlatform
     protected virtual void UpdateFormState()
     {
         if (this.Controller == null)
+        {
+            RefresherState.Logger.LogWarning(LogType.PatchForm, $"Controller is null, not updating form state");
             return;
+        }
         
         bool enableControls = this.Controller.EnableControls;
 
@@ -149,7 +155,10 @@ public abstract class PipelineForm : RefresherForm, IAccessesPlatform
     private void AddFormInputsToPipelineInternal()
     {
         if (this.Pipeline == null || this.Pipeline.State == PipelineState.Running)
+        {
+            RefresherState.Logger.LogWarning(LogType.PatchForm, $"Pipeline is null or currently running, cancelling adding inputs to pipeline");
             return;
+        }
 
         this.Pipeline.Reset();
         this.AddFormInputsToPipeline();
@@ -160,10 +169,16 @@ public abstract class PipelineForm : RefresherForm, IAccessesPlatform
     protected virtual void OnConnect(object? sender, EventArgs e)
     {
         if (this.Pipeline == null)
+        {
+            RefresherState.Logger.LogWarning(LogType.PatchForm, $"Pipeline is null, cancelling platform connection");
             return;
+        }
         
         if (this.Pipeline.State == PipelineState.Running)
+        {
+            RefresherState.Logger.LogWarning(LogType.PatchForm, $"Pipeline is currently running, cancelling platform connection");
             return;
+        }
         
         this.AddFormInputsToPipelineInternal();
         
@@ -261,17 +276,21 @@ public abstract class PipelineForm : RefresherForm, IAccessesPlatform
 
     protected virtual void OnPatchButtonClick(object? sender, EventArgs e)
     {
-        if (this.Pipeline == null)
+        if (this.Pipeline == null || this.ServerUrlInput == null)
+        {
+            RefresherState.Logger.LogWarning(LogType.PatchForm, $"Pipeline or URL input is null, cancelling patch execution");
             return;
-
+        }
+        
         if (this.Pipeline.State == PipelineState.Running)
         {
-            this.Controller?.CancelPipeline();
+            RefresherState.Logger.LogWarning(LogType.PatchForm, $"Pipeline is currently running, cancelling patch execution");
             return;
         }
         
         if (this.Pipeline.State is PipelineState.Cancelled or PipelineState.Error or PipelineState.Finished)
         {
+            RefresherState.Logger.LogDebug(LogType.PatchForm, $"Resetting pipeline before execution because state is {this.Pipeline.State}");
             this.Pipeline.Reset();
         }
         
@@ -306,11 +325,17 @@ public abstract class PipelineForm : RefresherForm, IAccessesPlatform
     
     protected virtual void OnRevertPatchClick(object? sender, EventArgs e)
     {
-        if (this.Pipeline == null)
+        if (this.Pipeline == null || this.ServerUrlInput == null)
+        {
+            RefresherState.Logger.LogWarning(LogType.PatchForm, $"Pipeline or URL input is null, cancelling patch revert");
             return;
+        }
         
         if (this.Pipeline.State == PipelineState.Running)
+        {
+            RefresherState.Logger.LogWarning(LogType.PatchForm, $"Pipeline is currently running, cancelling patch revert");
             return;
+        }
         
         this.AddFormInputsToPipelineInternal();
         
@@ -334,10 +359,16 @@ public abstract class PipelineForm : RefresherForm, IAccessesPlatform
     protected void OnAutoDiscoverClick(object? sender, EventArgs e)
     {
         if (this.Pipeline == null || this.ServerUrlInput == null)
+        {
+            RefresherState.Logger.LogWarning(LogType.PatchForm, $"Pipeline or URL input is null, cancelling AutoDiscover");
             return;
+        }
         
         if (this.Pipeline.State == PipelineState.Running)
+        {
+            RefresherState.Logger.LogWarning(LogType.PatchForm, $"Pipeline is currently running, cancelling AutoDiscover");
             return;
+        }
         
         TextControl control = this.ServerUrlInput.Input;
 
@@ -357,10 +388,16 @@ public abstract class PipelineForm : RefresherForm, IAccessesPlatform
     protected void OnCopyJoinKeyClick(object? sender, EventArgs e)
     {
         if (this.Pipeline == null || this.JoinKeyInput == null)
+        {
+            RefresherState.Logger.LogWarning(LogType.PatchForm, $"Pipeline or join key input is null, cancelling join key URL copy");
             return;
+        }
         
         if (this.Pipeline.State == PipelineState.Running)
+        {
+            RefresherState.Logger.LogWarning(LogType.PatchForm, $"Pipeline is currently running, cancelling join key URL copy");
             return;
+        }
         
         Debug.Assert(this.Pipeline.ShorthandUrlId != null);
         
@@ -378,7 +415,10 @@ public abstract class PipelineForm : RefresherForm, IAccessesPlatform
     protected void OnViewGuideClick(object? sender, EventArgs _)
     {
         if (this.Pipeline == null)
+        {
+            RefresherState.Logger.LogWarning(LogType.PatchForm, $"Pipeline is null, cancelling guide open");
             return;
+        }
 
         if (this.Pipeline.GuideLink == null)
         {

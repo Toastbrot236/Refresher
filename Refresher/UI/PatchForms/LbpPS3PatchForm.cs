@@ -12,6 +12,7 @@ public class LbpPS3PatchForm : PipelineForm
     // and once we make PipelineController (and superclasses of it) manage all the pipelines we need per form
     protected override Type PipelineType => typeof(LbpPS3PatchPipeline);
     protected Ps3ConnectionInput ConnectionInput { get; set; }
+    protected override Button? ConnectButton => this.ConnectionInput.LabelRow.SideButton;
 
     public LbpPS3PatchForm() : this(null)
     {
@@ -31,7 +32,7 @@ public class LbpPS3PatchForm : PipelineForm
             new((this.ProgressBars = new PatchProgressBars()).Row),
 
             this.PatchButton = new Button(this.OnPatchButtonClick) { Text = "Apply Patch!" },
-            this.PatchButton = new Button(this.OnPatchButtonClick) { Text = "Revert Patch" },
+            this.RevertPatchButton = new Button(this.OnRevertPatchClick) { Text = "Revert Patch" },
             new Button(this.OnViewGuideClick) { Text = "View Guide" },
             new Button(this.OnCopyLogClick) { Text = "Copy Log (for support)" },
 

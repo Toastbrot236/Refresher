@@ -7,7 +7,7 @@ public class ServerUrlInput : ITableRowWrapper
     public TableRow Row => this.LabelRow.Row;
     public LabelledRow LabelRow { get; set; }
     public TextBox Input { get; set; }
-    public Button? AutoDiscoverButton { get; set; }
+    public Button AutoDiscoverButton { get; set; }
 
     public ServerUrlInput(EventHandler<EventArgs> onAutoDiscoverClick)
     {

@@ -12,6 +12,7 @@ public class LbpRPCS3ReconfigureForm : PipelineForm
     // and once we make PipelineController (and superclasses of it) manage all the pipelines we need per form
     protected override Type PipelineType => typeof(PatchworkRPCS3ConfigPipeline);
     protected Rpcs3ConnectionInput ConnectionInput { get; set; }
+    protected override Button? ConnectButton => this.ConnectionInput.LabelRow.SideButton;
 
     public LbpRPCS3ReconfigureForm() : this(null)
     {
