@@ -14,13 +14,6 @@ public class PatchLogDisplay
         {
             Height = -1,
         };
-
-        /*
-        new StackLayoutItem(this.LogMessageDisplay = new ListBox
-                {
-                    Height = -1,
-                }, VerticalAlignment.Top, true),
-        */
         
         this.StackItem = new((this.LabelRow = new LabelledRow (this.Display = new ListBox
         {

@@ -36,8 +36,9 @@ public class LabelledRow : TableRow, ITableRowWrapper
                 this.Label,
                 this.Content,
                 // would make more sense if the button was to the right of the text field,
-                // but eto sucks and doesn't let me set the text field to take max width even though it's
-                // not the right-most component
+                // but eto sucks and doesn't let me set the text field to take max width or something like that,
+                // so it has to be either the right most component (doesn't look great),
+                // or it has to be in its own row by itself (decent enough, but not really good imo).
                 sideButton,
             ]));
         }
