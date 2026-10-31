@@ -52,7 +52,7 @@ public abstract class PipelineForm : RefresherForm, IAccessesPlatform
         this.AutoApply = autoApply;
         this.Platform = new EtoPlatformInterface(this);
 
-        this.Pipeline = (Pipeline)Activator.CreateInstance(this.PipelineType, this)!;
+        this.Pipeline = (Pipeline)Activator.CreateInstance(this.PipelineType)!;
         this.Pipeline.Initialize(this.Platform);
         
         PreviousInputStorage.Read();
@@ -146,6 +146,15 @@ public abstract class PipelineForm : RefresherForm, IAccessesPlatform
 
     protected bool _shouldTriggerOnConnect = false;
 
+    private void AddFormInputsToPipelineInternal()
+    {
+        if (this.Pipeline == null || this.Pipeline.State == PipelineState.Running)
+            return;
+
+        this.Pipeline.Reset();
+        this.AddFormInputsToPipelineInternal();
+    }
+
     protected abstract void AddFormInputsToPipeline();
     
     protected virtual void OnConnect(object? sender, EventArgs e)
@@ -156,7 +165,7 @@ public abstract class PipelineForm : RefresherForm, IAccessesPlatform
         if (this.Pipeline.State == PipelineState.Running)
             return;
         
-        this.AddFormInputsToPipeline();
+        this.AddFormInputsToPipelineInternal();
         
         Task.Run(async () =>
         {
@@ -303,7 +312,7 @@ public abstract class PipelineForm : RefresherForm, IAccessesPlatform
         if (this.Pipeline.State == PipelineState.Running)
             return;
         
-        this.AddFormInputsToPipeline();
+        this.AddFormInputsToPipelineInternal();
         
         Task.Run(async () =>
         {
