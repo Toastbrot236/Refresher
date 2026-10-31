@@ -9,7 +9,7 @@ public class GameListDropdown : ITableRowWrapper
     public DropDown Dropdown { get; set; }
 
     // No content initially, will be manually set by the parent's OnConnect() method
-    public GameListDropdown(EventHandler<EventArgs> onCopyUrlClick)
+    public GameListDropdown()
     {
         this.Dropdown = new DropDown
         {
